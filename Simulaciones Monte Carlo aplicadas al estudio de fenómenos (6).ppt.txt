@@ -1,0 +1,135 @@
+Simulaciones Monte Carlo aplicadas al estudio de fenómenos superficiales
+
+Alberto Gustavo Albesaalbesa@inifta.unlp.edu.ar
+
+Adsorción 
+
+Fenómeno de superficieAumento en la concentración de una determinada especie sobre una interfase
+
+Usos de la adsorción
+
+Eliminación de contaminantesAlmacenamiento de gases de alta energía (ej. hidrógeno, metano)Separación de gases (ej.: nitrógeno y oxígeno)
+
+Estructuras de Carbón	
+
+GrafitoCarbones activadosNanotubosNanocuernos (Nanohorns)
+
+Simulaciones Monte Carlo 
+
+Estudiar los fenómenos a nivel molecularObtener información sobre los calores isostéricos de adsorciónConjunto Gran CanónicoMovimiento/Creación/DestrucciónPmov=min{1,exp-[DE/kT ]}Pcre =min{1,1/(N+1)exp[B-DE/kT]}Pdes=min{1,N exp[DE/kT-B]}	B=ln(fV/kBT)
+
+Comparar
+
+Modelos de campo medioPotenciales de fácil aplicaciónPotenciales más realistasDatos experimentales
+
+Potenciales utilizados
+
+Interacción Fluido-FluidoPotencial de Lennard-Jonesjij (a,b) = 4 e [ (sij (a,b)/rij (a,b) )12 – (sij(a,b)  / r ij (a,b) )6 Interacción Fluido-SólidoModelo de Steele (lamina plana semi infinita)Modelo Atomístico (Costo computacional alto!!!)U=S 4 e [ (sij (a,b)/rij (a,b) )12 – (sij(a,b)  / r ij (a,b) )6
+
+Resultados
+
+Published in: Alberto G. Albesa; Jorge L. Llanos; Jos L. Vicente; Langmuir  2008, 24, 3836-3840.DOI: 10.1021/la7034938Copyright © 2008 American Chemical Society
+
+Perfiles de densidad T=80.2/103/113
+
+Published in: Alberto G. Albesa; Jorge L. Llanos; Jos L. Vicente; Langmuir  2008, 24, 3836-3840.DOI: 10.1021/la7034938Copyright © 2008 American Chemical Society
+
+Modelo Reticular
+
+Published in: Alberto G. Albesa; Jorge L. Llanos; Jos L. Vicente; Langmuir  2008, 24, 3836-3840.DOI: 10.1021/la7034938Copyright © 2008 American Chemical Society
+
+Experimental and lattice gas model isotherms at reduced temperatures = 0.5383 (T = 103 K) and = 0.9 (T = 171 K), where ( = 4[(a + 2b)]-1).
+
+Resolver mecanismos
+
+¿Dónde se adsorben las moléculas en  los nanotubos de C?
+
+Sitios de adsorción
+
+(a) Minimum of binding energy profiles along the tube (If E ≥ 0, then we set E = 0), for opened end tubes of diameter 9.49 A (7,7) SWNT; in kJ/mol and arbitrary axes units; (b) corresponding isotherm at 83, 93, and 113 K; (c) isosteric heat of adsorption; (d) upper view of filling evolution corresponding to isotherm at 113 K and pressures of 0.062, 5.0, and 56.3 KPa.
+
+Published in: Alberto G. Albesa; Edgardo A. Fertitta; José L. Vicente; Langmuir  2010, 26, 786-795.DOI: 10.1021/la902192aCopyright © 2009 American Chemical Society
+
+(a) Minimum of binding energy profiles along the tube (if E ≥ 0, then we set E = 0), for opened end tubes of diameter 16.28 A (12,12) SWNT; in kJ/mol and arbitrary axes units; (b) corresponding isotherm at 83, 93, and 113 K; (c) isosteric heat of adsorption; upper view of filling evolution corresponding to isotherm at 113 K and pressures of (d) 0.00138, 0.00627, 0.0563 KPa; 0.563, 5.63, 25.0, and 56.3 KPa.
+
+Published in: Alberto G. Albesa; Edgardo A. Fertitta; José L. Vicente; Langmuir  2010, 26, 786-795.DOI: 10.1021/la902192aCopyright © 2009 American Chemical Society
+
+(a) Minimum of binding energy profiles along the tube (if E ≥ 0, then we set E = 0), for opened end tubes of diameter 20.34 A (15,15) SWNT; in kJ/mol and arbitrary axes units; (b) corresponding isotherm at 83, 93, and 113 K; (c) isosteric heat of adsorption; upper view of filling evolution corresponding to isotherm at 113 K and pressures of (d) 0.0000133, 0.00509, 0.0226 KPa; (e) 0.0509, 0.226, 0.509 KPa; (f) 2.26, 5.09, 22.6, and 45.2 KPa.
+
+Published in: Alberto G. Albesa; Edgardo A. Fertitta; José L. Vicente; Langmuir  2010, 26, 786-795.DOI: 10.1021/la902192aCopyright © 2009 American Chemical Society
+
+Información sobre sitios de adsorción mediante calorometríaEs muy difícil la adsorción en los ICLa dimensionalidad afecta las presiones en las que se completan las monocapas
+
+Sistemas experimentalmente complicados
+
+Mezclas gaseosasSustratos complejos
+
+Etano/Etileno sobre nanotubos
+
+*
+
+Heterogeneous nanotube clusters employed in the simulations. Sizes from left to right are NT_Mix1, NT_Mix2, and NT_Mix3, respectively.
+
+Published in: Alberto G. Albesa; Matías Rafti; Dinesh S. Rawat; José Luis Vicente; Aldo D. Migone; Langmuir  2012, 28, 1824-1832.DOI: 10.1021/la204314aCopyright © 2011 American Chemical Society
+
+*
+
+Simulated adsorption isotherms at 153 K for ethylene (dotted line), ethane (solid line), and the equimolar mixture (dashed line) for homogeneous (upper panels) and heterogeneous (lower panels) nanotube bundles.
+
+Published in: Alberto G. Albesa; Matías Rafti; Dinesh S. Rawat; José Luis Vicente; Aldo D. Migone; Langmuir  2012, 28, 1824-1832.DOI: 10.1021/la204314aCopyright © 2011 American Chemical Society
+
+*
+
+Published in: Alberto G. Albesa; Matías Rafti; Dinesh S. Rawat; José Luis Vicente; Aldo D. Migone; Langmuir  2012, 28, 1824-1832.DOI: 10.1021/la204314aCopyright © 2011 American Chemical Society
+
+Importante incorporar heterogeneidades para que coincidan los resultados experimentalesLa mayor separación se logra en el interior de los nanotubos
+
+Metano/Dióxido de Carbono sobre carbones activados
+
+Published in: Alberto G. Albesa et al./Adsorption Science & Technology Vol. 30 No. 8/9 2012.DOI: 10.1260/0263-6174.30.8-9.669Copyright © 2013 Multi Science Publishing
+
+Structures for the simulated carbons. (a) C-24-1; (b) C-54-1; (c) C-96-1; (d) C-150-1.
+
+Isotermas
+
+Published in: Alberto G. Albesa et al./Adsorption Science & Technology Vol. 30 No. 8/9 2012.DOI: 10.1260/0263-6174.30.8-9.669Copyright © 2013 Multi Science Publishing
+
+Calor isostérico
+
+Published in: Alberto G. Albesa et al./Adsorption Science & Technology Vol. 30 No. 8/9 2012.DOI: 10.1260/0263-6174.30.8-9.669Copyright © 2013 Multi Science Publishing
+
+Selectividad
+
+Published in: Alberto G. Albesa et al./Adsorption Science & Technology Vol. 30 No. 8/9 2012.DOI: 10.1260/0263-6174.30.8-9.669Copyright © 2013 Multi Science Publishing
+
+Relación entre los calores isostéricos y la selectividadLa selectividad cambia con las estructuras de los CA
+
+Polímeros con respuesta
+
+Sistemas en soluciónConjunto Gran CanónicoMovimiento/Creación/DestrucciónPmov=min{1,exp-[DE/kT ]}Pcre =min{1,1/(N+1)exp[B-DE/kT]}Pdes=min{1,N exp[DE/kT-B]}	B=ln(fV/kBT)
+
+Published in: Alberto G. Albesa & Matías Rafti & José L. Vicente./J Mol Model (2013) 19:2183–2188.DOI: 10.1007/s00894-013-1761-8Copyright © Springer-Verlag Berlin Heidelberg 2013
+
+Inversión de carga superficial
+
+Perfiles de densidad de cationes monovalentes
+
+Published in: Alberto G. Albesa & Matías Rafti & José L. Vicente./J Mol Model (2013) 19:2183–2188.DOI: 10.1007/s00894-013-1761-8Copyright © Springer-Verlag Berlin Heidelberg 2013
+
+Perfiles de densidad de cationes divalentes
+
+Published in: Alberto G. Albesa & Matías Rafti & José L. Vicente./J Mol Model (2013) 19:2183–2188.DOI: 10.1007/s00894-013-1761-8Copyright © Springer-Verlag Berlin Heidelberg 2013
+
+Perfiles de densidad de cationes trivalentes
+
+Published in: Alberto G. Albesa & Matías Rafti & José L. Vicente./J Mol Model (2013) 19:2183–2188.DOI: 10.1007/s00894-013-1761-8Copyright © Springer-Verlag Berlin Heidelberg 2013
+
+El mecanismo de selectividad de aniones es principalmente una consecuencia del apantallamiento de las cargas por cationesLas sales producen desplazamiento de los equilibrios ácido-base como consecuencia del confinamiento
+
+Trabajo actual (futuro)
+
+Simulación de Nanotubos activados químicamentePolímeros dentro de poros con distintas geometríasAdsorción de pesticidas 
+
+Agradecimientos	
+
+Comité organizadorCONICETCICUNLP

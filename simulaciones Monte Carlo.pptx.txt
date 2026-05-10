@@ -1,0 +1,61 @@
+Simulaciones Monte Carlo aplicadas al estudio de fenómenos superficiales
+
+Alberto Gustavo Albesaalbesa@inifta.unlp.edu.ar
+
+Introducción 
+
+El interés en el estudio de los nanoporos radica en sus potenciales aplicaciones en medicina, nanofluídica, biotecnología, etc.
+
+Introducción 
+
+Cuando existe una asimetría en la geometría del poro o en la carga superficial de un nanoporo, se produce la rectificación de la corriente. La rectificación de la corriente implica que el flujo iónico es mayor en una dirección que en el otro.
+
+Introducción 
+
+El objetivo principal es obtener distintas respuestas en la rectificación como función de la composición del entorno
+
+Phosphate-Responsive Biomimetic Nanofluidic Diodes Regulated by Polyamine–Phosphate Interactions: Insights into Their Functional Behavior from Theory and Experiment
+
+Polimero de PAHNanocanales cónicosEstudiar el efecto del pH
+
+Descripción del problema
+
+Ecuación de Nernst –PlanckEl flujo iónico combina el flujo relacionado con el gradiente de concentración y el flujo debido a un gradiente de potencial.
+
+Descripción del problema
+
+Ecuación de PoissonDetermina la interacción entre los transportadores de carga del electrolito y las cargas que existen en las paredes del poro
+
+Descripción del problema
+
+Ecuación de continuidadHay un flujo de corriente sólo si la carga varía con el tiempo. Como tratamos con un sistema estacionario, esta variación es nula.
+
+Descripción del problema
+
+Problema que solo tiene resolución numérica. Sin embargo se pueden hacer algunas aproximacionesSuponemos que el flujo solo tiene componente axial, por lo tanto la ecuación (1) se puede escribir como 
+
+Descripción del problema
+
+Y la ecuación de continuidad se puede escribir comoDonde a es el radio del nanoporo y queda determinado por
+
+Comparar
+
+Modelos de campo medioPotenciales de fácil aplicaciónPotenciales más realistasDatos experimentales
+
+(a) Scheme showing the modification of the nanochannel with PAH and the ionizable groups in the surface. (b) Experimental curves of the modified nanochannel under different pH conditions (c). Theoretical curves of the modified nanochannel at different surface charges.
+
+Published in: Gonzalo Pérez-Mitta; Alberto Albesa; Facundo M. Gilles; María Eugenia Toimil-Molares; Christina Trautmann; Omar Azzaroni; J. Phys. Chem. C  2017, 121, 9070-9076.DOI: 10.1021/acs.jpcc.7b01639Copyright © 2017 American Chemical Society
+
+The maximum value obtained for a nanochannel modified with PAH at low pH was 1.7|e|/nm2, which is similar in magnitude to the native negative charge of the nanochannel.  On the other hand, the maximum negative surface charge obtained after the modification at high pH was -1.1|e|/nm2  which is lower than the initial surface charge of the nanochannel.
+
+The behavior of the rectification factor with pH showed an extended low rectification region between pH 5 and 8. The PNP model was then used to correlate a rectification factors with a certain surface charge density, finding that this region has a net charge near zero. This is why we use the term isoelectric region (IR) (Fig. 3) to name the current-voltage response within this range of pH.
+
+Simulaciones Monte Carlo 
+
+Estudiar los fenómenos a nivel molecularObtener información sobre los calores isostéricos de adsorciónConjunto Gran CanónicoMovimiento/Creación/DestrucciónPmov=min{1,exp-[DE/kT ]}Pcre =min{1,1/(N+1)exp[B-DE/kT]}Pdes=min{1,N exp[DE/kT-B]}	B=ln(fV/kBT)
+
+Published in: Gonzalo Pérez-Mitta; Alberto Albesa; Facundo M. Gilles; María Eugenia Toimil-Molares; Christina Trautmann; Omar Azzaroni; J. Phys. Chem. C  2017, 121, 9070-9076.DOI: 10.1021/acs.jpcc.7b01639Copyright © 2017 American Chemical Society
+
+Phosphate-Responsive Biomimetic Nanofluidic Diodes Regulated by Polyamine–Phosphate Interactions: Insights into Their Functional Behavior from Theory and Experiment
+
+Polímero de PAHSolución mezcla de aniones mono y divalentes

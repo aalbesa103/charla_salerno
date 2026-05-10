@@ -1,0 +1,356 @@
+  { type:'section', title:'Continuum Level: PNP', subtitle:'Behavior at device scale?', scale:'CONTINUUM' },
+  { type:'glass', title:'Poisson-Nernst-Planck Equations',
+    eq:'\\[ \\nabla \\cdot (D \\nabla c + z \\mu c \\nabla \\phi) = 0 \\]',
+    caption:'Nernst-Planck (mass flux by diffusion and migration) + Poisson (electrostatics).',
+    points:[
+      'Ionic flux has two components: diffusive (∝ ∇c, concentration gradient) and electromigration (∝ c∇φ, electric field).',
+      'The Poisson equation ∇²φ = −ρ_e/ε couples the electric field to the free charge density of the ions.',
+      'The coupled PNP system determines the concentration and potential profiles in the pore at device scale.'
+    ], scale:'CONTINUUM',
+    image:'PNP (TRANSPORT)\nConcept: Nanopore, moving ions, potential gradient, arrows indicating flux.',
+    svg:`<svg viewBox="0 0 300 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;border:1px solid #d0d7e0;border-radius:6px;background:#fff;margin-top:0.5rem;">
+  <text x="150" y="13" font-size="9" font-family="monospace" fill="#6e7a8a" text-anchor="middle" letter-spacing="1">PNP PROFILES ALONG NANOPORE AXIS</text>
+
+  <!-- LEFT panel: concentration profiles -->
+  <text x="72" y="26" font-size="7.5" font-family="monospace" fill="#3b4252" text-anchor="middle">concentration c(z)</text>
+  <line x1="18" y1="30" x2="18" y2="115" stroke="#d0d7e0" stroke-width="1"/>
+  <line x1="18" y1="115" x2="138" y2="115" stroke="#d0d7e0" stroke-width="1"/>
+  <!-- pore walls -->
+  <rect x="18" y="30" width="5" height="85" fill="#e8ecf0"/>
+  <rect x="133" y="30" width="5" height="85" fill="#e8ecf0"/>
+  <!-- cation profile: concentrated on left, depleted inside -->
+  <path d="M23,45 C35,45 45,55 60,68 C75,80 90,85 115,82 C122,80 128,75 133,70" fill="none" stroke="#1a3a5c" stroke-width="2"/>
+  <!-- anion profile: depleted on left, enriched inside (brush is negative) -->
+  <path d="M23,95 C35,95 45,88 60,75 C75,62 90,55 115,58 C122,60 128,65 133,68" fill="none" stroke="#8b2020" stroke-width="2"/>
+  <!-- legend -->
+  <line x1="22" y1="125" x2="38" y2="125" stroke="#1a3a5c" stroke-width="2"/>
+  <text x="40" y="128" font-size="6.5" font-family="monospace" fill="#1a3a5c">c₊ (cations)</text>
+  <line x1="22" y1="136" x2="38" y2="136" stroke="#8b2020" stroke-width="2"/>
+  <text x="40" y="139" font-size="6.5" font-family="monospace" fill="#8b2020">c₋ (anions)</text>
+
+  <!-- divider -->
+  <line x1="150" y1="18" x2="150" y2="148" stroke="#e8ecf0" stroke-width="1" stroke-dasharray="3,3"/>
+
+  <!-- RIGHT panel: potential profile -->
+  <text x="222" y="26" font-size="7.5" font-family="monospace" fill="#3b4252" text-anchor="middle">potential φ(z)</text>
+  <line x1="162" y1="30" x2="162" y2="115" stroke="#d0d7e0" stroke-width="1"/>
+  <line x1="162" y1="115" x2="282" y2="115" stroke="#d0d7e0" stroke-width="1"/>
+  <!-- pore walls -->
+  <rect x="162" y="30" width="5" height="85" fill="#e8ecf0"/>
+  <rect x="277" y="30" width="5" height="85" fill="#e8ecf0"/>
+  <!-- potential: drops steeply near charged brush walls, flat in bulk -->
+  <path d="M167,50 C172,52 178,58 190,65 C205,72 215,75 232,75 C248,75 258,70 270,62 C275,58 278,54 282,50" fill="rgba(26,58,74,0.06)" stroke="#1a3a4a" stroke-width="2"/>
+  <!-- zero line -->
+  <line x1="162" y1="75" x2="282" y2="75" stroke="#d0d7e0" stroke-width="0.8" stroke-dasharray="3,3"/>
+  <text x="159" y="78" font-size="6" font-family="monospace" fill="#94a3b8" text-anchor="end">0</text>
+  <!-- arrows for electromigration flux -->
+  <line x1="190" y1="88" x2="204" y2="88" stroke="#c8a96e" stroke-width="1.3" marker-end="url(#arrpnp)"/>
+  <line x1="220" y1="88" x2="234" y2="88" stroke="#c8a96e" stroke-width="1.3" marker-end="url(#arrpnp)"/>
+  <text x="212" y="100" font-size="6.5" font-family="monospace" fill="#c8a96e" text-anchor="middle">zμc∇φ</text>
+  <!-- Poisson coupling annotation -->
+  <text x="222" y="125" font-size="6.5" font-family="monospace" fill="#3a2a1a" text-anchor="middle">∇²φ = −ρ_e/ε</text>
+  <text x="222" y="136" font-size="6.5" font-family="monospace" fill="#94a3b8" text-anchor="middle">(coupled to c±)</text>
+
+  <defs>
+    <marker id="arrpnp" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+      <path d="M0,0 L0,5 L5,2.5 Z" fill="#c8a96e"/>
+    </marker>
+  </defs>
+</svg>`},
+
+
+  { type:'problem', title:'Which pore geometry maximizes osmotic power?', subtitle:'Blue Energy: harvesting the river-sea salinity gradient', atlas:'Atlas #2', scale:'CONTINUUM' },
+  { type:'solution', title:'Bullet-Shaped Pore: Optimal Geometry', method:'PNP in asymmetric pores', finding:'The bullet-shaped pore triples the extractable osmotic power compared to the cylindrical pore, by drastically reducing the ionic access resistance at the narrow end. The conical pore, an intuitive alternative, has lower performance due to its softer field gradient.', decision:'Fabricate bullet-shaped asymmetric pores for osmotic energy applications. Conical pores are suboptimal; the bullet geometry should be the design standard for this application.', scale:'CONTINUUM', solutionImgs:['imagenes_extraidas_metadatos/1-s2_0-S2211285520301701-main/img_p3_5.png','imagenes_extraidas_metadatos/1-s2_0-S2211285520301701-main/img_p4_6.png'] },
+
+  { type:'problem', title:'How to create a phosphate-sensitive ionic diode?', subtitle:'Nanofluidic switching for high signal-to-noise biosensing', atlas:'Atlas #7', scale:'CONTINUUM', problemImg:'imagenes_extraidas_metadatos/P-rez-Mitta_et_al-2018-Small/img_p2_0.png' },
+  { type:'solution', title:'Rectification Inversion by Phosphates', method:'Coupled PNP + MC', finding:'Phosphate binding to the PAH polymer inverts the surface charge of the nanopore, which in turn inverts the direction of ionic rectification. The PNP model quantitatively predicts the phosphate concentration threshold for switching, validated experimentally.', decision:'Use PAH as the functionalization layer in nanopores for high-SNR phosphate biosensing. The rectification inversion provides a robust binary signal that is easily detectable.', scale:'CONTINUUM', solutionImgs:['imagenes_extraidas_metadatos/P-rez-Mitta_et_al-2018-Small/img_p3_2.png','imagenes_extraidas_metadatos/P-rez-Mitta_et_al-2018-Small/img_p5_4.png'] },
+
+  { type:'problem', title:'How to design a three-stable-state ionic switch?', subtitle:'NIR (non-ideal rectification) via induced nanoprecipitation', atlas:'Atlas #18', scale:'CONTINUUM', problemImg:'imagenes_extraidas_metadatos/Nanoscale/img_p3_0.png' },
+  { type:'solution', title:'Three-Level Iontronic Logic', method:'PNP in non-linear regime', finding:'Nanoprecipitation of a poorly soluble salt inside the pore creates a stable low-conductance state that does not spontaneously reverse: the third state of the switch. PNP predicts that this state requires operating near the solubility limit of the precipitation product.', decision:'Design functionalized asymmetric pores to operate under conditions where the local ionic product concentration is close to the Ksp of the target precipitate. Pore asymmetry is essential to localize the precipitation.', scale:'CONTINUUM', solutionImgs:['imagenes_extraidas_metadatos/Nanoscale/img_p5_2.png','imagenes_extraidas_metadatos/Nanoscale/img_p7_4.png'] },
+
+  { type:'text', title:'Multiscale Integration: The Complete Loop',
+    body:'<strong>DFT → MC → Molecular Theory → PNP</strong>: the flow of information across scales that constitutes rational design of functional materials.',
+    insights:[
+      { label:'The loop', text:'DFT provides interaction energies → MC and Theory calculate isotherms and density profiles → PNP translates those profiles into device currents and selectivities.' },
+      { label:'Cross-validation', text:'Each level can be independently validated experimentally, allowing identification of which scale holds the discrepancies with experiment.' },
+      { label:'Predictive power', text:'Once the loop is calibrated, we can explore thousands of design variants computationally before synthesizing a single material.' }
+    ], scale:'CONTINUUM',
+    image:'FINAL INTEGRATION\nConcept: Vertical workflow: DFT → parameters → MC → adsorption → PNP → device.',
+    svg:`<svg viewBox="0 0 300 190" xmlns="http://www.w3.org/2000/svg" style="width:100%;border:1px solid #d0d7e0;border-radius:6px;background:#fff;">
+  <text x="150" y="14" font-size="9" font-family="monospace" fill="#6e7a8a" text-anchor="middle" letter-spacing="1">THE COMPLETE DESIGN LOOP</text>
+  <!-- DFT -->
+  <rect x="100" y="22" width="100" height="26" rx="4" fill="#e8f0f8" stroke="#1a3a5c" stroke-width="1.5"/>
+  <text x="150" y="33" font-size="9" font-family="monospace" fill="#1a3a5c" text-anchor="middle" font-weight="bold">DFT</text>
+  <text x="150" y="43" font-size="7" font-family="monospace" fill="#1a3a5c" text-anchor="middle">geometry · charges · ε,σ</text>
+  <!-- arrow -->
+  <line x1="150" y1="48" x2="150" y2="60" stroke="#c8a96e" stroke-width="1.5" marker-end="url(#arrl)"/>
+  <text x="155" y="56" font-size="7" font-family="monospace" fill="#c8a96e">ε, σ, q</text>
+  <!-- MC -->
+  <rect x="100" y="60" width="100" height="26" rx="4" fill="#e8f4ec" stroke="#1a4a2e" stroke-width="1.5"/>
+  <text x="150" y="71" font-size="9" font-family="monospace" fill="#1a4a2e" text-anchor="middle" font-weight="bold">Monte Carlo (GCMC)</text>
+  <text x="150" y="81" font-size="7" font-family="monospace" fill="#1a4a2e" text-anchor="middle">isotherm · selectivity · ρ_mol(r)</text>
+  <!-- arrow -->
+  <line x1="150" y1="86" x2="150" y2="98" stroke="#c8a96e" stroke-width="1.5" marker-end="url(#arrl)"/>
+  <text x="155" y="94" font-size="7" font-family="monospace" fill="#c8a96e">isotherm</text>
+  <!-- Molecular Theory -->
+  <rect x="85" y="98" width="130" height="26" rx="4" fill="#e8f4f8" stroke="#1a3a4a" stroke-width="1.5"/>
+  <text x="150" y="109" font-size="9" font-family="monospace" fill="#1a3a4a" text-anchor="middle" font-weight="bold">Molecular Theory</text>
+  <text x="150" y="119" font-size="7" font-family="monospace" fill="#1a3a4a" text-anchor="middle">ρ(r) · charge profile · pH response</text>
+  <!-- arrow -->
+  <line x1="150" y1="124" x2="150" y2="136" stroke="#c8a96e" stroke-width="1.5" marker-end="url(#arrl)"/>
+  <text x="155" y="132" font-size="7" font-family="monospace" fill="#c8a96e">ρ_charge(r)</text>
+  <!-- PNP -->
+  <rect x="100" y="136" width="100" height="26" rx="4" fill="#f8f5e8" stroke="#3a2a1a" stroke-width="1.5"/>
+  <text x="150" y="147" font-size="9" font-family="monospace" fill="#3a2a1a" text-anchor="middle" font-weight="bold">PNP</text>
+  <text x="150" y="157" font-size="7" font-family="monospace" fill="#3a2a1a" text-anchor="middle">I–V curve · rectification · selectivity</text>
+
+  <!-- left: experiment validates each level -->
+  <text x="48" y="35" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">spectroscopy</text>
+  <text x="48" y="44" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">crystallography</text>
+  <line x1="100" y1="35" x2="70" y2="35" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="3,2"/>
+
+  <text x="48" y="73" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">volumetry</text>
+  <text x="48" y="82" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">gravimetry</text>
+  <line x1="100" y1="73" x2="70" y2="73" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="3,2"/>
+
+  <text x="48" y="111" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">swelling</text>
+  <text x="48" y="120" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">titration</text>
+  <line x1="85" y1="111" x2="70" y2="111" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="3,2"/>
+
+  <text x="48" y="149" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">electrochem</text>
+  <text x="48" y="158" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">I–V expt.</text>
+  <line x1="100" y1="149" x2="70" y2="149" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="3,2"/>
+
+  <text x="48" y="175" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">← experiment</text>
+  <text x="48" y="184" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">validates each level</text>
+
+  <defs>
+    <marker id="arrl" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+      <path d="M0,0 L0,5 L5,2.5 Z" fill="#c8a96e"/>
+    </marker>
+  </defs>
+</svg>`},
+
+  // FINAL
+  { type:'text', title:'Philosophy',
+    body:'Each method answers a <strong>different question</strong>. Together, they design.',
+    insights:[
+      { label:'Question first', text:'Before choosing a method, ask what you want to know. Incorrect choice of theory level can give the "right" answer to the wrong question.' },
+      { label:'The dialogue between scales', text:'Methods are not independent: parameters flow upward and design questions flow downward. Coherence between levels is the quality guarantee.' }
+    ], scale:'CLOSING' },
+  { type:'text', title:'Impact',
+    body:'<strong>Rational Design · Prediction · Industrial Efficiency.</strong>',
+    insights:[
+      { label:'Rational design', text:'Replaces experimental trial-and-error with guided prediction. New material development times are reduced from decades to years.' },
+      { label:'Sustainability', text:'CO₂ capture materials, water purification membranes, precision drug delivery: all with lower experimental cost and higher success rate.' }
+    ], scale:'CLOSING' },
+  { type:'text', title:'Future',
+    body:'<strong>Coupled multiscale + physics-based AI.</strong>',
+    insights:[
+      { label:'The next step', text:'Machine learning models trained on multiscale simulation data can replace costly quantum-level calculations in large-scale materials searches.' },
+      { label:'Physics-informed ML', text:'Neural networks that respect conservation laws and physical symmetries of the system. AI does not replace physics: it accelerates it.' }
+    ], scale:'CLOSING' },
+  { type:'final', title:'The Power of Integration', contact:'albesa@inifta.unlp.edu.ar · INIFTA · CONICET · UNLP', scale:'CLOSING' }
+];
+
+let current = 0;
+const deck = document.getElementById('deck');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+
+function imgPlaceholder(img, svg) {
+  if (svg) return `<div style="margin-top:1rem;">${svg}</div>`;
+  if (!img) return '';
+  const lines = img.split('\n');
+  const title = lines[0] || '';
+  const desc = lines.slice(1).join(' ');
+  return `<div class="img-placeholder"><div class="img-title">${title}</div><p class="img-desc">${desc}</p></div>`;
+}
+
+function buildSlide(s, idx) {
+  const sec = document.createElement('section');
+  sec.className = 'slide';
+  const levelKey = (s.scale || '').replace('NIVEL ', '').split(' ')[0];
+  const stripeColor = LEVEL_COLORS[s.scale] || '#94a3b8';
+
+  let headerLeft = `<span class="level-tag">${s.scale || ''}</span>`;
+  let headerRight = '';
+  if (s.atlas) headerRight = `<span class="atlas-tag">${s.atlas}</span>`;
+
+  const header = `<header class="slide-header">${headerLeft}<div class="header-right">${headerRight}</div></header>`;
+  const footer = `<footer class="slide-footer">
+    <span class="attribution">Albesa · INIFTA-CONICET-UNLP</span>
+    <div class="progress-track"><div class="progress-fill" id="fill-${idx}" style="width:${((idx+1)/slideData.length)*100}%"></div></div>
+    <span class="slide-num">${String(idx+1).padStart(2,'0')} / ${slideData.length}</span>
+  </footer>`;
+
+  let body = '';
+
+  if (s.type === 'title') {
+    body = `<div class="slide-body"><div class="slide-title-wrap">
+      <div class="eyebrow">INIFTA · CONICET · UNLP</div>
+      <h1>${s.title}</h1>
+      <div class="title-rule"></div>
+      <p class="sub">${s.subtitle}</p>
+    </div></div>`;
+
+  } else if (s.type === 'section') {
+    body = `<div class="slide-body section-wrap">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:${stripeColor};"></div>
+      <div class="level-label">${s.scale}</div>
+      <h2>${s.title}</h2>
+      <p class="section-q">${s.subtitle}</p>
+    </div>`;
+
+  } else if (s.type === 'text') {
+    const insights = s.insights || [];
+    const insightHTML = insights.map(i => `<div class="insight-box"><div class="insight-label">${i.label}</div><p>${i.text}</p></div>`).join('');
+    const imgHTML = (s.image || s.svg) ? imgPlaceholder(s.image, s.svg) : '';
+    const hasRight = insights.length > 0 || imgHTML;
+    body = `<div class="slide-body">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:${stripeColor};"></div>
+      <div class="text-wrap${hasRight ? '' : ' single'}">
+        <div class="text-left">
+          <h3>${s.title}</h3>
+          <p class="body-text">${s.body || s.content || ''}</p>
+        </div>
+        ${hasRight ? `<div class="text-right">${insightHTML}${imgHTML}</div>` : ''}
+      </div>
+    </div>`;
+
+  } else if (s.type === 'glass') {
+    const points = s.points || [];
+    const ptHTML = points.map(p => `<div class="eq-point"><div class="dot"></div><p>${p}</p></div>`).join('');
+    const imgHTML = (s.image || s.svg) ? imgPlaceholder(s.image, s.svg) : '';
+    body = `<div class="slide-body" style="justify-content:flex-start;padding-top:1.5rem;">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:${stripeColor};"></div>
+      <div class="eq-wrap">
+        <div class="eq-left">
+          <h3>${s.title}</h3>
+          <div class="eq-box">${s.eq || s.content || ''}</div>
+          <p class="eq-caption">${s.caption || s.subtitle || ''}</p>
+          ${imgHTML}
+        </div>
+        <div class="eq-right">${ptHTML}</div>
+      </div>
+    </div>`;
+
+  } else if (s.type === 'problem') {
+    if (s.problemImg) {
+      body = `<div class="slide-body">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:#8b2020;"></div>
+        <div class="problem-wrap-with-img">
+          <div class="problem-text">
+            <div class="problem-eyebrow"><span class="problem-badge">Design challenge</span>${s.atlas ? `<span class="problem-badge" style="color:var(--accent);border-color:var(--accent)">${s.atlas}</span>` : ''}</div>
+            <h3>${s.title}</h3>
+            <div class="problem-context">${s.subtitle}</div>
+          </div>
+          <div class="paper-img-container">
+            <img class="paper-img" src="${s.problemImg}" alt="Structure under evaluation" loading="lazy"/>
+            <span class="paper-img-caption">Structure under evaluation</span>
+          </div>
+        </div>
+      </div>`;
+    } else {
+      body = `<div class="slide-body">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:#8b2020;"></div>
+        <div class="problem-wrap">
+          <div class="problem-eyebrow"><span class="problem-badge">Design challenge</span>${s.atlas ? `<span class="problem-badge" style="color:var(--accent);border-color:var(--accent)">${s.atlas}</span>` : ''}</div>
+          <h3>${s.title}</h3>
+          <div class="problem-context">${s.subtitle}</div>
+        </div>
+      </div>`;
+    }
+
+  } else if (s.type === 'solution') {
+    const solImgsHTML = s.solutionImgs ? `<div class="solution-images">${s.solutionImgs.map(src => `<img src="${src}" alt="Evidence" loading="lazy"/>`).join('')}</div>` : '';
+    if (s.solutionImgs) {
+      body = `<div class="slide-body" style="justify-content:flex-start;padding-top:2rem;">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:#1a4a2e;"></div>
+        <div class="solution-wrap-3col">
+          <div class="solution-left">
+            <h3>${s.title}</h3>
+            <span class="method-tag">${s.method || s.subtitle || ''}</span>
+            <p class="finding">${s.finding || s.content || ''}</p>
+          </div>
+          <div class="decision-card">
+            <div class="dec-label">Design decision</div>
+            <p class="dec-text">${s.decision}</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.75rem;">
+            ${s.solutionImgs.map(src => `<img class="paper-img" src="${src}" alt="Evidence" loading="lazy"/>`).join('')}
+          </div>
+        </div>
+      </div>`;
+    } else {
+      body = `<div class="slide-body">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:#1a4a2e;"></div>
+        <div class="solution-wrap">
+          <div class="solution-left">
+            <h3>${s.title}</h3>
+            <span class="method-tag">${s.method || s.subtitle || ''}</span>
+            <p class="finding">${s.finding || s.content || ''}</p>
+          </div>
+          <div class="decision-card">
+            <div class="dec-label">Design decision</div>
+            <p class="dec-text">${s.decision}</p>
+          </div>
+        </div>
+      </div>`;
+    }
+
+  } else if (s.type === 'table') {
+    const rows = s.rows || [];
+    const headers = s.headers || ['Model', 'Type', 'Description and features', 'When to use it'];
+    const rowsHTML = rows.map(r => `<tr>
+      <td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td>
+    </tr>`).join('');
+    body = `<div class="slide-body" style="justify-content:flex-start;padding-top:2rem;">
+      <div class="table-wrap">
+        <h3>${s.title}</h3>
+        <table class="methods-table">
+          <thead><tr><th>${headers[0]}</th><th>${headers[1]}</th><th>${headers[2]}</th><th>${headers[3]}</th></tr></thead>
+          <tbody>${rowsHTML}</tbody>
+        </table>
+      </div>
+    </div>`;
+
+
+  } else if (s.type === 'final') {
+    body = `<div class="slide-body final-wrap">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:${stripeColor};"></div>
+      <h1>${s.title}</h1>
+      <div class="title-rule"></div>
+      <p class="contact">${s.contact}</p>
+    </div>`;
+  }
+
+  sec.innerHTML = header + body + footer;
+  return sec;
+}
+
+function render() {
+  deck.innerHTML = '';
+  slideData.forEach((s, i) => deck.appendChild(buildSlide(s, i)));
+  go(0);
+}
+
+function go(n) {
+  current = Math.max(0, Math.min(slideData.length - 1, n));
+  deck.style.transform = `translateX(-${current * 100}vw)`;
+  prevBtn.style.opacity = current === 0 ? '0.3' : '1';
+  nextBtn.style.opacity = current === slideData.length - 1 ? '0.3' : '1';
+  if (window.MathJax) MathJax.typesetPromise();
+}
+
+window.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') go(current + 1);
+  if (e.key === 'ArrowLeft') go(current - 1);
+});
+prevBtn.addEventListener('click', () => go(current - 1));
+nextBtn.addEventListener('click', () => go(current + 1));
+
+render();
+</script>
+</body>
+</html>

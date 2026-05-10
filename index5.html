@@ -1,0 +1,1932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Multiscale Integration — Alberto Albesa</title>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0d1117;
+  --ink2: #3b4252;
+  --ink3: #6e7a8a;
+  --rule: #d0d7e0;
+  --rule2: #e8ecf0;
+  --bg: #f7f5f0;
+  --bg2: #ffffff;
+  --quantum: #1a3a5c;
+  --quantum-light: #e8f0f8;
+  --mc: #1a4a2e;
+  --mc-light: #e8f4ec;
+  --md: #3a1a4a;
+  --md-light: #f0e8f8;
+  --cg: #4a2a1a;
+  --cg-light: #f8f0e8;
+  --theory: #1a3a4a;
+  --theory-light: #e8f4f8;
+  --pnp: #3a2a1a;
+  --pnp-light: #f8f4e8;
+  --accent: #c8a96e;
+  --problem: #8b2020;
+  --solution: #1a4a2e;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  /* ~15px en 768px (notebook 15"), 16px en pantallas más grandes */
+  font-size: clamp(14px, 2vh, 16px);
+}
+
+body {
+  overflow: hidden;
+  background: var(--bg);
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--ink);
+  height: 100vh;
+}
+
+/* ── Deck ── */
+.deck {
+  display: flex;
+  height: 100vh;
+  transition: transform 0.55s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.slide {
+  width: 100vw;
+  height: 100vh;
+  flex-shrink: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* ── Header bar ── */
+.slide-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 3rem;
+  border-bottom: 1px solid var(--rule);
+  background: var(--bg2);
+  z-index: 10;
+}
+
+.slide-header .level-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  border: 1px solid var(--rule);
+  padding: 0.3rem 0.75rem;
+  border-radius: 2rem;
+}
+
+.slide-header .atlas-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 0.3rem 0.75rem;
+  border-radius: 2rem;
+}
+
+.slide-header .header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* ── Footer bar ── */
+.slide-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 3rem;
+  border-top: 1px solid var(--rule);
+  background: var(--bg2);
+}
+
+.slide-footer .attribution {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--ink3);
+  letter-spacing: 0.08em;
+}
+
+.progress-track {
+  flex: 1;
+  max-width: 160px;
+  height: 2px;
+  background: var(--rule2);
+  border-radius: 1px;
+  overflow: hidden;
+  margin: 0 1.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--ink2);
+  border-radius: 1px;
+  transition: width 0.3s;
+}
+
+.slide-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--ink3);
+}
+
+/* ── Content area ── */
+.slide-body {
+  padding: 1.25rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule) transparent;
+}
+
+/* ── Type: title ── */
+.slide-title-wrap {
+  max-width: 780px;
+}
+
+.slide-title-wrap .eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 1.25rem;
+}
+
+.slide-title-wrap h1 {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 5rem;
+  font-weight: 400;
+  line-height: 1.08;
+  color: var(--ink);
+  margin-bottom: 1.5rem;
+}
+
+.slide-title-wrap .sub {
+  font-size: 1.35rem;
+  color: var(--ink2);
+  font-weight: 300;
+  line-height: 1.6;
+  max-width: 520px;
+}
+
+.title-rule {
+  width: 3rem;
+  height: 2px;
+  background: var(--accent);
+  margin: 1.75rem 0;
+}
+
+/* ── Type: section ── */
+.section-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+
+.section-wrap .level-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 1rem;
+}
+
+.section-wrap h2 {
+  font-family: 'EB Garamond', serif;
+  font-size: 4rem;
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--ink);
+  margin-bottom: 0.75rem;
+}
+
+.section-wrap .section-q {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 1.75rem;
+  color: var(--ink2);
+}
+
+/* ── Type: text (theoretical) ── */
+.text-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.text-wrap.single {
+  grid-template-columns: 1fr;
+  max-width: 680px;
+}
+
+.text-left h3 {
+  font-family: 'EB Garamond', serif;
+  font-size: 2.9rem;
+  font-weight: 400;
+  line-height: 1.15;
+  margin-bottom: 1.25rem;
+  color: var(--ink);
+}
+
+.text-left .body-text {
+  font-size: 1.2rem;
+  line-height: 1.7;
+  color: var(--ink2);
+  font-weight: 300;
+}
+
+.text-left .body-text strong {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.text-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Key insight box */
+.insight-box {
+  border-left: 3px solid var(--accent);
+  padding: 1rem 1.25rem;
+  background: var(--bg2);
+  border-radius: 0 6px 6px 0;
+}
+
+.insight-box .insight-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.4rem;
+}
+
+.insight-box p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--ink2);
+}
+
+/* Level badge for text slides */
+.level-stripe {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+}
+
+/* ── Type: glass (equation) ── */
+.eq-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+.eq-left h3 {
+  font-family: 'EB Garamond', serif;
+  font-size: 2.7rem;
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+  color: var(--ink);
+}
+
+.eq-box {
+  background: var(--bg2);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 2rem;
+  font-size: 2rem;
+  text-align: center;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eq-caption {
+  margin-top: 1rem;
+  font-size: 1.05rem;
+  color: var(--ink3);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.eq-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.eq-point {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.75rem 1rem;
+  background: var(--bg2);
+  border: 1px solid var(--rule2);
+  border-radius: 6px;
+}
+
+.eq-point .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-top: 0.45rem;
+  flex-shrink: 0;
+}
+
+.eq-point p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--ink2);
+}
+
+/* ── Type: problem ── */
+.problem-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.5rem;
+  max-width: 680px;
+}
+
+.problem-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.problem-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8b2020;
+  border: 1px solid #8b2020;
+  padding: 0.25rem 0.65rem;
+  border-radius: 2rem;
+}
+
+.problem-wrap h3, .problem-wrap-with-img h3 {
+  font-family: 'EB Garamond', serif;
+  font-size: 3.4rem;
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.problem-context {
+  font-size: 1.15rem;
+  color: var(--ink2);
+  font-weight: 300;
+  padding: 1rem 1.25rem;
+  border-left: 3px solid #d4a0a0;
+  background: #fdf5f5;
+  border-radius: 0 6px 6px 0;
+}
+
+/* ── Type: solution ── */
+.solution-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.solution-left h3 {
+  font-family: 'EB Garamond', serif;
+  font-size: 2.7rem;
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+
+.solution-left .method-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--ink3);
+  margin-bottom: 1.25rem;
+  display: block;
+}
+
+.solution-left .finding {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: var(--ink2);
+  font-weight: 300;
+}
+
+.decision-card {
+  background: var(--bg2);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 1.5rem;
+  border-top: 3px solid var(--solution);
+}
+
+.decision-card .dec-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--solution);
+  margin-bottom: 0.75rem;
+}
+
+.decision-card .dec-text {
+  font-size: 1.25rem;
+  line-height: 1.65;
+  color: var(--ink);
+  font-weight: 400;
+}
+
+/* ── Type: table ── */
+.table-wrap h3 {
+  font-family: 'EB Garamond', serif;
+  font-size: 2.5rem;
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+  color: var(--ink);
+}
+
+.methods-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+
+.methods-table thead th {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 2px solid var(--rule);
+}
+
+.methods-table tbody td {
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--rule2);
+  color: var(--ink2);
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.methods-table tbody td:first-child {
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.methods-table tbody td:nth-child(2) {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--ink3);
+}
+
+.methods-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.methods-table tbody tr:hover td {
+  background: var(--bg2);
+}
+
+/* ── Type: final ── */
+.final-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  height: 100%;
+  max-width: 700px;
+}
+
+.final-wrap h1 {
+  font-family: 'EB Garamond', serif;
+  font-size: 4.4rem;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.1;
+  color: var(--ink);
+  margin-bottom: 2rem;
+}
+
+.final-wrap .contact {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--ink3);
+  letter-spacing: 0.05em;
+}
+
+/* ── Level color map ── */
+.level-FOUNDATION   { background: #94a3b8; }
+.level-QUANTUM      { background: var(--quantum); }
+.level-BRIDGE       { background: #64748b; }
+.level-MC           { background: var(--mc); }
+.level-DYNAMICS     { background: var(--md); }
+.level-COARSE       { background: var(--cg); }
+.level-THEORY       { background: var(--theory); }
+.level-CONTINUUM    { background: var(--pnp); }
+.level-CLOSING      { background: var(--accent); }
+
+/* bg tint for section slides (optional) */
+.section-tint-QUANTUM   { background: #f0f4f8; }
+.section-tint-MC        { background: #f0f7f3; }
+.section-tint-DYNAMICS  { background: #f5f0f8; }
+.section-tint-COARSE    { background: #f8f3f0; }
+.section-tint-THEORY    { background: #f0f6f8; }
+.section-tint-CONTINUUM { background: #f8f5f0; }
+
+/* ── Nav arrows ── */
+.nav-btn {
+  position: fixed;
+  bottom: 50px;
+  background: var(--bg2);
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  transition: background 0.15s, border-color 0.15s;
+  color: var(--ink2);
+  font-size: 1rem;
+}
+
+.nav-btn:hover { background: var(--ink); color: white; border-color: var(--ink); }
+.nav-btn.prev { left: calc(50% - 52px); }
+.nav-btn.next { right: calc(50% - 52px); }
+
+/* image placeholder */
+.img-placeholder {
+  border: 1.5px dashed var(--rule);
+  border-radius: 6px;
+  padding: 1.5rem;
+  text-align: center;
+  background: var(--bg2);
+}
+
+.img-placeholder .img-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 0.5rem;
+}
+
+.img-placeholder .img-desc {
+  font-size: 0.8rem;
+  color: var(--ink3);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* ── Paper images in cases ── */
+.problem-wrap-with-img {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  align-items: center;
+  max-width: none;
+}
+
+.problem-wrap-with-img .problem-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 580px;
+}
+
+.paper-img-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.paper-img {
+  max-width: 100%;
+  max-height: 340px;
+  object-fit: contain;
+  border-radius: 6px;
+  border: 1px solid var(--rule);
+  background: white;
+}
+
+.paper-img-caption {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--ink3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.solution-images {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.solution-images img {
+  width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  border-radius: 6px;
+  border: 1px solid var(--rule);
+  background: white;
+}
+
+.solution-wrap-3col {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck"></div>
+
+<button class="nav-btn prev" id="prevBtn">&#8592;</button>
+<button class="nav-btn next" id="nextBtn">&#8594;</button>
+
+<script>
+const LEVEL_COLORS = {
+  'FOUNDATION': '#94a3b8',
+  'QUANTUM': '#1a3a5c',
+  'BRIDGE': '#64748b',
+  'MONTE CARLO': '#1a4a2e',
+  'DYNAMICS': '#3a1a4a',
+  'COARSE-GRAIN': '#4a2a1a',
+  'MOLECULAR THEORY': '#1a3a4a',
+  'CONTINUUM': '#3a2a1a',
+  'CLOSING': '#c8a96e'
+};
+
+const slideData = [
+  // INTRO
+  { type:'title', title:'Computational Methods for the Design of Adsorptive and Separation Materials', subtitle:'From Molecular Simulations to Continuum Models', scale:'FOUNDATION' },
+  { type:'text', title:'The Fundamental Question',
+    body:'How do we design materials that <strong>separate, capture, or transport</strong> molecules with precision and efficiency?',
+    insights:[
+      { label:'The challenge', text:'No single method can answer all relevant questions. The solution requires a hierarchical strategy.' },
+      { label:'The strategy', text:'Build scaled approximations: each level sacrifices detail to gain scale, and passes information to the next.' }
+    ], scale:'FOUNDATION' },
+  { type:'glass', title:'The Foundation: Schrödinger Equation',
+    eq:'\\[ \\hat{H}\\Psi = E\\Psi \\]',
+    caption:'The absolute information of the universe in one equation.',
+    points:[
+      'Describes exactly the mechanics of any quantum system.',
+      'Computationally intractable for real systems with thousands of atoms.',
+      'Every simulation method is a controlled approximation of this equation.'
+    ], scale:'FOUNDATION' },
+  { type:'text', title:'The Scale Problem',
+    body:'Real systems are <strong>computationally intractable</strong> at full atomic resolution. A functional nanopore contains millions of atoms interacting simultaneously.',
+    insights:[
+      { label:'The computational cost', text:'Solving the exact Schrödinger equation scales exponentially with the number of electrons. A 100-atom system is intractable.' },
+      { label:'The solution', text:'We build a hierarchy of approximations. Each level answers a different question and passes parameters to the next level.' }
+    ], scale:'FOUNDATION',
+    svg:`<svg viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;border:1px solid #d0d7e0;border-radius:6px;background:#fff;padding:4px;">
+  <text x="10" y="14" font-size="9" font-family="monospace" fill="#6e7a8a" letter-spacing="1">COMPUTATIONAL COST vs SYSTEM SIZE</text>
+  <!-- axes -->
+  <line x1="36" y1="20" x2="36" y2="155" stroke="#d0d7e0" stroke-width="1"/>
+  <line x1="36" y1="155" x2="290" y2="155" stroke="#d0d7e0" stroke-width="1"/>
+  <!-- x labels -->
+  <text x="36" y="167" font-size="8" font-family="monospace" fill="#6e7a8a" text-anchor="middle">10</text>
+  <text x="100" y="167" font-size="8" font-family="monospace" fill="#6e7a8a" text-anchor="middle">100</text>
+  <text x="190" y="167" font-size="8" font-family="monospace" fill="#6e7a8a" text-anchor="middle">1 000</text>
+  <text x="280" y="167" font-size="8" font-family="monospace" fill="#6e7a8a" text-anchor="middle">10⁶</text>
+  <text x="163" y="177" font-size="8" font-family="monospace" fill="#94a3b8" text-anchor="middle">number of atoms</text>
+  <!-- y label -->
+  <text x="8" y="95" font-size="8" font-family="monospace" fill="#94a3b8" text-anchor="middle" transform="rotate(-90,8,95)">cost (log)</text>
+  <!-- Exact QM — shoots off instantly -->
+  <polyline points="36,148 55,120 70,88 82,55 90,28" fill="none" stroke="#8b2020" stroke-width="2"/>
+  <text x="92" y="26" font-size="8" font-family="monospace" fill="#8b2020">Exact QM (e^N)</text>
+  <!-- DFT N³ -->
+  <polyline points="36,148 80,138 130,118 180,88 230,58 270,38" fill="none" stroke="#1a3a5c" stroke-width="2" stroke-dasharray="5,3"/>
+  <text x="272" y="36" font-size="8" font-family="monospace" fill="#1a3a5c">DFT (N³)</text>
+  <!-- PNP / continuum — nearly flat -->
+  <polyline points="36,148 100,144 180,140 270,137" fill="none" stroke="#1a4a2e" stroke-width="2" stroke-dasharray="2,3"/>
+  <text x="272" y="135" font-size="8" font-family="monospace" fill="#1a4a2e">PNP (field)</text>
+  <!-- MC intermediate -->
+  <polyline points="36,148 90,143 150,132 210,112 260,88" fill="none" stroke="#c8a96e" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="262" y="86" font-size="8" font-family="monospace" fill="#c8a96e">MC (N log N)</text>
+  <!-- intractable zone -->
+  <rect x="82" y="20" width="208" height="108" fill="#8b2020" fill-opacity="0.04" rx="2"/>
+  <text x="186" y="34" font-size="8" font-family="monospace" fill="#8b2020" text-anchor="middle" fill-opacity="0.5">intractable for QM</text>
+</svg>`},
+  { type:'text', title:'The Solution: Hierarchy of Approximations',
+    body:'We sacrifice <strong>detail to gain scale</strong>. The key is knowing exactly what is lost at each approximation and when that sacrifice is acceptable.',
+    insights:[
+      { label:'Rational design', text:'We do not test materials at random. We design them from first principles, predicting properties before synthesis.' },
+      { label:'Integration', text:'DFT → MC → Molecular Theory → PNP: each level feeds the next with validated parameters.' }
+    ], scale:'FOUNDATION',
+    svg:`<svg viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;border:1px solid #d0d7e0;border-radius:6px;background:#fff;">
+  <!-- boxes -->
+  <rect x="8" y="44" width="54" height="28" rx="4" fill="#e8f0f8" stroke="#1a3a5c" stroke-width="1.2"/>
+  <text x="35" y="56" font-size="9" font-family="monospace" fill="#1a3a5c" text-anchor="middle" font-weight="bold">DFT</text>
+  <text x="35" y="66" font-size="7" font-family="monospace" fill="#1a3a5c" text-anchor="middle">quantum</text>
+
+  <rect x="82" y="44" width="54" height="28" rx="4" fill="#e8f4ec" stroke="#1a4a2e" stroke-width="1.2"/>
+  <text x="109" y="56" font-size="9" font-family="monospace" fill="#1a4a2e" text-anchor="middle" font-weight="bold">MC</text>
+  <text x="109" y="66" font-size="7" font-family="monospace" fill="#1a4a2e" text-anchor="middle">statistical</text>
+
+  <rect x="156" y="44" width="64" height="28" rx="4" fill="#e8f4f8" stroke="#1a3a4a" stroke-width="1.2"/>
+  <text x="188" y="56" font-size="8" font-family="monospace" fill="#1a3a4a" text-anchor="middle" font-weight="bold">Mol. Theory</text>
+  <text x="188" y="66" font-size="7" font-family="monospace" fill="#1a3a4a" text-anchor="middle">mean field</text>
+
+  <rect x="240" y="44" width="54" height="28" rx="4" fill="#f8f5e8" stroke="#3a2a1a" stroke-width="1.2"/>
+  <text x="267" y="56" font-size="9" font-family="monospace" fill="#3a2a1a" text-anchor="middle" font-weight="bold">PNP</text>
+  <text x="267" y="66" font-size="7" font-family="monospace" fill="#3a2a1a" text-anchor="middle">continuum</text>
+
+  <!-- arrows between boxes -->
+  <line x1="62" y1="58" x2="82" y2="58" stroke="#c8a96e" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="136" y1="58" x2="156" y2="58" stroke="#c8a96e" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="220" y1="58" x2="240" y2="58" stroke="#c8a96e" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- parameter labels on arrows -->
+  <text x="72" y="52" font-size="7" font-family="monospace" fill="#c8a96e" text-anchor="middle">ε,σ,q</text>
+  <text x="146" y="52" font-size="7" font-family="monospace" fill="#c8a96e" text-anchor="middle">isotherm</text>
+  <text x="230" y="52" font-size="7" font-family="monospace" fill="#c8a96e" text-anchor="middle">ρ(r)</text>
+
+  <!-- scale labels below -->
+  <text x="35" y="86" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">Å · eV</text>
+  <text x="109" y="86" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">nm · kT</text>
+  <text x="188" y="86" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">nm · kT</text>
+  <text x="267" y="86" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">μm · V</text>
+
+  <!-- output labels -->
+  <text x="35" y="100" font-size="7" font-family="monospace" fill="#6e7a8a" text-anchor="middle">interaction</text>
+  <text x="35" y="109" font-size="7" font-family="monospace" fill="#6e7a8a" text-anchor="middle">energies</text>
+  <text x="109" y="100" font-size="7" font-family="monospace" fill="#6e7a8a" text-anchor="middle">adsorption</text>
+  <text x="109" y="109" font-size="7" font-family="monospace" fill="#6e7a8a" text-anchor="middle">isotherm</text>
+  <text x="188" y="100" font-size="7" font-family="monospace" fill="#6e7a8a" text-anchor="middle">charge</text>
+  <text x="188" y="109" font-size="7" font-family="monospace" fill="#6e7a8a" text-anchor="middle">profiles</text>
+  <text x="267" y="100" font-size="7" font-family="monospace" fill="#6e7a8a" text-anchor="middle">I–V curve</text>
+  <text x="267" y="109" font-size="7" font-family="monospace" fill="#6e7a8a" text-anchor="middle">selectivity</text>
+
+  <text x="150" y="14" font-size="9" font-family="monospace" fill="#6e7a8a" text-anchor="middle" letter-spacing="1">INFORMATION FLOW ACROSS SCALES</text>
+
+  <defs>
+    <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L6,3 Z" fill="#c8a96e"/>
+    </marker>
+  </defs>
+</svg>`},
+  { type:'table', title:'Hierarchy: Equation, Approximation, and Design Question', scale:'FOUNDATION',
+    image:'METHODS HIERARCHY\nConcept: Vertical zoom through layers (Electronic, Molecular, Meso, Macro) labeled DFT, MC/MD, Theory/CG, PNP/IAST.',
+    rows:[
+      ['Quantum (DFT)', 'E₀ ≤ E[n(r)]', 'Exact functional — many-body wavefunction', 'How do molecules interact chemically?'],
+      ['Statistical', 'F = −k_B T ln Z', 'Trajectory determinism', 'Conceptual bridge micro→macro'],
+      ['Monte Carlo', 'P = min(1, e^{−βΔE})', 'Temporal evolution — dynamics', 'How much adsorbs and with what selectivity?'],
+      ['Dynamics (MD)', 'ma = −∇V', 'Quantum potential — uses classical springs', 'How do molecules move dynamically?'],
+      ['Molecular Theory', 'δΩ[ρ]/δρ = 0', 'Exact 3D geometry — mean field', 'How to optimize collective response?'],
+      ['Coarse-Grain', 'V_CG ≈ −kT ln ∫ e^{−βV}', 'Local atomic detail', 'Large-scale morphological systems?'],
+      ['Continuum (PNP)', '∇·(D∇c + zμc∇φ) = 0', 'Molecular discreteness', 'Behavior at device scale?']
+    ]},
+
+  // ============================================================
+// BLOQUE DFT COMPLETO — reemplaza slides  array
+// (desde el section "Quantum Level: DFT" hasta antes del
+//  primer problem "Glyphosate")
+// ============================================================
+
+// ── SECCIÓN 1: FUNDAMENTOS DE DFT ───────────────────────────
+
+{ type:'section', title:'Quantum Level: DFT', subtitle:'How do molecules interact chemically?', scale:'QUANTUM' },
+
+{ type:'glass', title:'The N-Electron Problem',
+  eq:'\\[ \\hat{H}\\Psi(\\mathbf{r}_1,\\mathbf{r}_2,\\ldots,\\mathbf{r}_N) = E\\Psi \\]',
+  caption:'Ψ depends on 3N spatial coordinates plus spin. For a 50-electron molecule that is a 150-dimensional object. Storing, manipulating and optimizing it is computationally impossible for systems of chemical interest.',
+  points:[
+    'Exact solution: scales exponentially with N. A 100-atom system is absolutely intractable.',
+    'Hartree-Fock: independent-electron approximation. Scales as N⁴ but ignores electron correlation entirely.',
+    'DFT: replaces Ψ with the electron density ρ(r) — a 3-dimensional object regardless of N. Scales as N³ with RI approximation.'
+  ], scale:'QUANTUM' },
+
+{ type:'text', title:'Hohenberg-Kohn Theorems (1964)',
+  body:'The ground-state energy of any electronic system is a <strong>unique functional of its electron density ρ(r)</strong>. Not of the wavefunction — only of ρ(r). This guarantees that the density contains all necessary information. What it does not guarantee is how to construct that functional.',
+  insights:[
+    { label:'Theorem 1', text:'There is a one-to-one correspondence between the ground-state electron density ρ(r) and the external potential v(r). The density uniquely determines the Hamiltonian and therefore all properties of the system.' },
+    { label:'Theorem 2', text:'The exact ground-state density minimizes the total energy functional E[ρ]. This provides a variational principle: any trial density gives an energy above the true ground-state energy.' },
+    { label:'The fundamental limitation', text:'The theorems prove the functional exists but say nothing about its form. The search for accurate approximations to E[ρ] is the central problem of DFT.' }
+  ], scale:'QUANTUM',
+  svg:`<svg viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;border:1px solid #d0d7e0;border-radius:6px;background:#fff;">
+  <line x1="150" y1="8" x2="150" y2="142" stroke="#e8ecf0" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="75" y="20" font-size="8" font-family="monospace" fill="#8b2020" text-anchor="middle" letter-spacing="0.5">WAVEFUNCTION</text>
+  <text x="75" y="31" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">Ψ(r₁,r₂,...,rN)</text>
+  <circle cx="55" cy="70" r="18" fill="#8b2020" fill-opacity="0.08" stroke="#8b2020" stroke-width="0.8" stroke-dasharray="3,2"/>
+  <circle cx="80" cy="60" r="15" fill="#8b2020" fill-opacity="0.08" stroke="#8b2020" stroke-width="0.8" stroke-dasharray="3,2"/>
+  <circle cx="65" cy="85" r="20" fill="#8b2020" fill-opacity="0.06" stroke="#8b2020" stroke-width="0.8" stroke-dasharray="3,2"/>
+  <circle cx="90" cy="80" r="14" fill="#8b2020" fill-opacity="0.07" stroke="#8b2020" stroke-width="0.8" stroke-dasharray="3,2"/>
+  <text x="75" y="115" font-size="7" font-family="monospace" fill="#8b2020" text-anchor="middle">3N dimensions</text>
+  <text x="75" y="125" font-size="7" font-family="monospace" fill="#8b2020" text-anchor="middle">scales e^N</text>
+  <text x="75" y="137" font-size="8" font-family="monospace" fill="#8b2020" text-anchor="middle">✗ intractable</text>
+  <text x="150" y="76" font-size="14" fill="#c8a96e" text-anchor="middle">⟶</text>
+  <text x="150" y="88" font-size="6" font-family="monospace" fill="#c8a96e" text-anchor="middle">H-K</text>
+  <text x="225" y="20" font-size="8" font-family="monospace" fill="#1a3a5c" text-anchor="middle" letter-spacing="0.5">ELECTRON DENSITY</text>
+  <text x="225" y="31" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">ρ(r) in 3D</text>
+  <ellipse cx="225" cy="72" rx="38" ry="14" fill="#1a3a5c" fill-opacity="0.18" stroke="#1a3a5c" stroke-width="0.8"/>
+  <ellipse cx="225" cy="72" rx="26" ry="9" fill="#1a3a5c" fill-opacity="0.22" stroke="#1a3a5c" stroke-width="0.8"/>
+  <ellipse cx="225" cy="72" rx="14" ry="5" fill="#1a3a5c" fill-opacity="0.3" stroke="#1a3a5c" stroke-width="0.8"/>
+  <circle cx="225" cy="72" r="4" fill="#1a3a5c" fill-opacity="0.55"/>
+  <circle cx="200" cy="82" r="2.5" fill="#c8a96e"/>
+  <circle cx="250" cy="82" r="2.5" fill="#c8a96e"/>
+  <text x="225" y="105" font-size="7" font-family="monospace" fill="#1a3a5c" text-anchor="middle">3 dimensions only</text>
+  <text x="225" y="115" font-size="7" font-family="monospace" fill="#1a3a5c" text-anchor="middle">scales N³</text>
+  <text x="225" y="137" font-size="8" font-family="monospace" fill="#1a4a2e" text-anchor="middle">✓ tractable</text>
+</svg>` },
+
+{ type:'glass', title:'The Kohn-Sham Formalism (1965)',
+  eq:'\\[ \\left[-\\tfrac{1}{2}\\nabla^2 + v_{\\mathrm{Ne}}(\\mathbf{r}) + \\int\\frac{\\rho(\\mathbf{r}^{\\prime})}{|\\mathbf{r}-\\mathbf{r}^{\\prime}|}d\\mathbf{r}^{\\prime} + V_{\\mathrm{XC}}(\\mathbf{r})\\right]\\varphi_i = \\varepsilon_i\\,\\varphi_i \\]',
+  caption:'The density is built from one-electron orbitals: ρ(r) = Σᵢ|φᵢ(r)|². The equations are solved self-consistently: a trial ρ generates V_XC, new orbitals generate a new ρ, and the cycle repeats until convergence.',
+  points:[
+    'Kohn and Sham introduced a fictitious system of non-interacting electrons with the same density as the real system. Its kinetic energy T_s is calculable exactly via orbitals.',
+    'The total energy is E[ρ] = T_s[ρ] + E_Ne[ρ] + J[ρ] + E_XC[ρ]. The first three terms are known exactly. Everything unknown is absorbed into E_XC.',
+    'If E_XC[ρ] were exact, the Kohn-Sham procedure would give the exact ground-state energy. The quality of DFT depends almost entirely on how well the chosen functional approximates E_XC.'
+  ], scale:'QUANTUM' },
+
+{ type:'text', title:'Exchange and Correlation: What E_XC Contains',
+  body:'E_XC absorbs two physically distinct effects plus the correction for an artificial error introduced by the formalism itself. Understanding each component explains why approximate functionals succeed or fail.',
+  insights:[
+    { label:'Exchange (E_X)', text:'Arises from the Pauli exclusion principle: two electrons with the same spin avoid each other — the Fermi hole. This avoidance lowers the energy relative to the classical Coulomb repulsion. In Hartree-Fock, E_X is calculated exactly. In DFT it is approximated as a functional of ρ(r).' },
+    { label:'Correlation (E_C)', text:'Electrons with opposite spin also avoid each other due to Coulomb repulsion — the Coulomb hole. DFT captures dynamic correlation (instantaneous avoidance) reasonably well but fails for static correlation, which appears in systems with near-degenerate electronic configurations (open-shell transition metals, bond-breaking).' },
+    { label:'Self-interaction error (SIE)', text:'The classical term J[ρ] includes the spurious interaction of each electron with itself. In Hartree-Fock this cancels exactly with E_X. In DFT with approximate functionals the cancellation is imperfect, leaving a residual SIE that causes electron over-delocalization and systematic underestimation of reaction barriers.' }
+  ], scale:'QUANTUM' },
+
+{ type:'table', title:"Jacob's Ladder: Hierarchy of Density Functional Approximations", scale:'QUANTUM',
+  headers:['Rung', 'Functional class', 'Ingredients', 'Examples', 'Key limitation'],
+  rows:[
+    ['1', 'LDA', 'ρ(r) only', 'SVWN', 'Overbinds. No dispersion. SIE severe.'],
+    ['2', 'GGA', 'ρ(r) + ∇ρ(r)', 'PBE, BLYP, BP86', 'No long-range dispersion. SIE persists.'],
+    ['3', 'meta-GGA', 'ρ, ∇ρ, τ(r)', 'TPSS, r²SCAN, M06-L', 'SIE reduced. Dispersion still absent.'],
+    ['4', 'Hybrid / RSH', '+ fraction of exact exchange', 'B3LYP, PBE0, ωB97X-V', 'N⁴ scaling. RSH mitigates SIE better.'],
+    ['5', 'Double-hybrid', '+ MP2 correlation', 'PWPB95-D4, ωB97M(2)', 'N⁵ scaling. Large basis sets required.']
+  ]},
+
+// ── SECCIÓN 2: FUNCIONAL, BASE Y SOLVENTE ───────────────────
+
+{ type:'section', title:'Fundamental Considerations in a DFT Calculation', subtitle:'Functional · Basis Sets · Solvent Model', scale:'QUANTUM' },
+
+// ── FUNCIONAL ───────────────────────────────────────────────
+
+{ type:'glass', title:'The E_XC Functional: Physical Foundation',
+  eq:'\\[ E[\\rho] = T_s[\\rho] + E_{Ne}[\\rho] + J[\\rho] + E_{XC}[\\rho] \\]',
+  caption:'E_XC is the only unknown term. It contains the kinetic correction T − T_s, the exchange energy from the Pauli principle, the dynamic and static correlation, and the self-interaction correction. No functional approximates all of these simultaneously and exactly.',
+  points:[
+    'Unlike post-HF methods, DFT does not offer a systematic path to the exact result. There is no guarantee that a higher-rung functional will be better for a specific property.',
+    'Dispersion (London forces) decays as R⁻⁶ at long range. All local and semi-local functionals decay exponentially — they cannot capture van der Waals interactions. Empirical D3/D4 corrections are the standard solution and are now considered mandatory.',
+    'The functional must be chosen based on the target property and validated against experimental data or high-level reference calculations for similar systems.'
+  ], scale:'QUANTUM' },
+
+{ type:'text', title:'The E_XC Functional: Typical Errors',
+  body:'Each functional class has characteristic failure modes. Knowing them in advance allows rational choice and avoids publishing results that are qualitatively wrong.',
+  insights:[
+    { label:'Barrier heights — (m)GGA severely underestimate', text:'SIE delocalizes the transition-state electron density, artificially stabilizing it. With BP86/QZ the SN2 barrier of CH₃F + OH⁻ is underestimated by more than 10 kcal/mol versus W2-F12 reference. With B3LYP the mean unsigned error across 76 barrier heights is ~4.5 kcal/mol (ranked 15th of 25 in Zhao & Truhlar benchmark).' },
+    { label:'π–π stacking — B3LYP without dispersion fails completely', text:'Mean unsigned error for nucleobase stacking complexes: B3LYP ≈ 8.5 kcal/mol (last place of 6 in Zhao & Truhlar 2005). The error is as large as the interaction energy itself. Adding D3 correction brings this to < 0.5 kcal/mol.' },
+    { label:'Property dependence — no universal functional', text:'B3LYP ranks 1st for bond angles in small organics but 27th of 42 for metal dimer atomization energies (MUE ~26 kcal/mol vs. best ~5.3 kcal/mol). A functional excellent for geometries can fail for electron affinities. The choice must be guided by the target property.' }
+  ], scale:'QUANTUM' },
+
+{ type:'text', title:'The E_XC Functional: Recommendations',
+  body:'The optimal functional depends on the <strong>role of DFT in the workflow</strong> and the target property. No single functional is universally best. Dispersion correction D3 or D4 is always required.',
+  insights:[
+    { label:'Geometry optimization and frequencies', text:'r²SCAN-3c or PBEh-3c (composite methods with built-in D3 and gCP). They provide TZ-quality structures at DZ cost. Rarely justified to go beyond this level for geometries in standard thermochemical studies.' },
+    { label:'Single-point energies — general purpose', text:'ωB97X-V or ωB97M-V with def2-TZVP. These range-separated hybrids are the best performers in the MGCDB84 benchmark (5000 data points). ωB97M-V ranks first overall: non-covalent interactions, thermochemistry, and barrier heights simultaneously.' },
+    { label:'Barrier heights specifically', text:'Range-separated hybrid mandatory: ωB97X-V, ωB97M-V, or CAM-B3LYP. Global hybrids with > 30% Fock exchange (BMK 42%, M06-2X 54%) are alternatives. (m)GGA must be avoided.' }
+  ], scale:'QUANTUM' },
+
+// ── BASE ────────────────────────────────────────────────────
+
+{ type:'text', title:'The Basis Set: Physical Foundation',
+  body:'Kohn-Sham orbitals are expanded in a <strong>finite set of atom-centered functions</strong>. The larger and more complete the set, the closer the result to the basis set limit — but at higher computational cost.',
+  insights:[
+    { label:'Cardinal number: DZ, TZ, QZ', text:'The cardinal indicates how many independent functions describe each valence orbital. Double-zeta (2) → Triple-zeta (3) → Quadruple-zeta (4). Each step improves accuracy and increases cost roughly by a factor of 3–10 depending on the property.' },
+    { label:'Recommended family: Ahlrichs def2-XVP', text:'def2-SVP (DZ), def2-TZVP (TZ), def2-TZVPP, def2-QZVP (QZ). Available for the entire periodic table with consistent quality. More efficient than Pople or Dunning families for standard DFT: not recommended for high-accuracy DFT work (see note below).' },
+    { label:'Polarization and diffuse functions', text:'Polarization functions (higher angular momentum) add flexibility for describing distorted electron clouds in bonds. Diffuse functions (small exponents) extend into space — essential for anions, dipole moments, polarizabilities, and NMR shielding constants.' }
+  ], scale:'QUANTUM' },
+
+{ type:'text', title:'The Basis Set: Typical Errors',
+  body:'Every finite basis set introduces systematic errors that interact with the functional choice. A good functional in a bad basis gives bad results. Knowing these errors determines when a larger basis is actually necessary.',
+  insights:[
+    { label:'BSSE — Basis Set Superposition Error', text:'When two fragments approach, each borrows basis functions from the other to lower its energy. This artificially stabilizes compact structures. BSSE affects not only intermolecular interactions but also conformational energies and molecular geometries with small bases. Corrected with Boys-Bernardi counterpoise (CP) or the geometric counterpoise (gCP) in composite methods.' },
+    { label:'BSIE — Basis Set Incompleteness Error', text:'A truncated basis cannot describe fine details of the electron density. Results do not represent the true functional answer — they represent the functional in an insufficient space. For energy-related properties, DZ bases give uncontrolled errors and are not recommended outside composite schemes.' },
+    { label:'Absent diffuse functions — qualitative error for anions', text:'Without diffuse functions, the electron density of anions and zwitterions is artificially compressed near the nuclei. In the glyphosate case: with 6-31G(d,p), species 4101 appears most stable; adding diffuse functions (6-311++G(2d,2p)) inverts the stability order and 4200 becomes dominant (58%) — consistent with XPS experiment.' }
+  ], scale:'QUANTUM' },
+
+{ type:'text', title:'The Basis Set: Recommendations',
+  body:'The basis set choice follows from the <strong>role of DFT in the workflow</strong> and the target property. The minimum acceptable size depends on what is being computed.',
+  insights:[
+    { label:'Geometry and frequencies: def2-TZVP is sufficient', text:'Structures are much less sensitive to basis set than energies. def2-TZVP (TZ) is the standard. Even def2-SVP (DZ) with gCP correction gives useful geometries — it is the basis of the PBEh-3c composite method. Going to QZ for geometry optimization wastes resources.' },
+    { label:'Energies: never below TZ; add polarization and diffuse as needed', text:'For reaction energies, conformational energies, barrier heights, and NCI: minimum def2-TZVP. For anions, dipole moments, polarizabilities: ma-def2-TZVP or def2-TZVPD (augmented with diffuse functions). For heavy atoms Z > 36: def2-ECP pseudopotentials are applied automatically with def2 bases, incorporating scalar relativistic effects. Always verify convergence by comparing TZ vs QZ results.' },
+    { label:'On Pople bases (6-31G, 6-311G): still valid in specific contexts', text:'Pople bases are the most widely used in the literature and remain valid for two specific situations. (1) When DFT is the first link in a multiscale workflow — parameterizing force fields, computing local PES curvatures — systematic errors cancel in energy differences or second derivatives; 6-31G(d) is sufficient and the comparison with existing literature is direct. (2) When comparing constitutional isomers or conformers with identical atomic composition, where BSSE and BSIE affect all species similarly. In all other cases — absolute energies, anions, NCI, publishable thermochemistry — the def2 family is preferred.' }
+  ], scale:'QUANTUM' },
+
+// ── SOLVENTE ────────────────────────────────────────────────
+
+{ type:'glass', title:'The Solvent Model: Non-Linear Self-Consistent Coupling',
+  eq:'\\[ G_{\\mathrm{el}} = \\langle\\Psi|\\hat{H}_{\\mathrm{vac}} + \\hat{V}_R|\\Psi\\rangle - \\tfrac{1}{2}\\langle\\Psi|\\hat{V}_R|\\Psi\\rangle \\]',
+  caption:'The ½ factor accounts for the polarization work done to create the reaction field. The solvent does not just shift the energy — it modifies the solute wavefunction, and that modified wavefunction determines all calculated properties: structure, charges, spectra.',
+  points:[
+    'Continuum models replace explicit solvent molecules with a dielectric medium of permittivity ε. The solute sits in a cavity; the interaction is represented by an apparent surface charge distribution σ(s) at the boundary.',
+    'The coupling is non-linear and self-consistent: σ depends on V_M (the molecular potential), which depends on Ψ, which is solved with a Hamiltonian that includes the interaction with σ. The cycle closes in the SCF procedure.',
+    'A vacuum calculation can yield qualitatively incorrect results for ionic systems. The neutral form of a zwitterion is typically more stable in vacuo; the zwitterion is stabilized in solution. This is not a quantitative correction — it is a qualitative change in chemistry.'
+  ], scale:'QUANTUM' },
+
+{ type:'text', title:'The Solvent Model: Typical Errors',
+  body:'Choosing an inappropriate solvent model — or ignoring solvation entirely — introduces errors that range from quantitative inaccuracy to qualitative failure. The severity scales with charge density and polarity.',
+  insights:[
+    { label:'COSMO/CPCM without non-electrostatic terms — fails for polar and ionic systems', text:'Purely electrostatic models neglect cavitation energy, solute-solvent dispersion, and solvent structure effects (hydrogen bonding). In the glyphosate case, IEFPCM predicts the neutral form 4112 as most stable; SMD (which includes these terms) correctly predicts zwitterion 4211 as dominant in water. The error is not numerical — it changes the predicted chemical species.' },
+    { label:'Vacuum for solution-phase properties — qualitatively wrong', text:'For systems with localized charge (ions, zwitterions, species with large dipole moments), the vacuum electronic structure is fundamentally different from the solvated one. Barrier heights, tautomeric equilibria, and deprotonation sequences can all invert. The error can reach tens of kcal/mol for highly charged systems.' },
+    { label:'Forgotten standard-state correction — systematic error in ΔG', text:'Solvation involves a change from gas-phase standard state (1 atm) to solution (1 mol/L). For each non-unimolecular reaction in solution, RTln(V_M) = 1.89 kcal/mol per species must be added when using SMD, COSMO-RS, or ALPB with default settings (Bursch et al., 2022). Omitting this correction introduces a systematic error in all ΔG of solvated reactions.' }
+  ], scale:'QUANTUM' },
+
+{ type:'table', title:'Continuum Solvent Models: When to Use Each', scale:'QUANTUM',
+  headers:['Model', 'Type', 'Non-electrostatic terms', 'Use for'],
+  rows:[
+    ['COSMO / CPCM', 'Conductor-like, ε → ∞', 'No', 'Exploratory calculations, highly polar solvents, geometry optimization with implicit solvent when speed is critical.'],
+    ['IEFPCM', 'Integral equation', 'No', 'General reference. More rigorous than CPCM for low-polarity solvents. Still insufficient for zwitterions or large charge density changes.'],
+    ['SMD', 'IEFPCM + G_CDS', 'Yes (parameterized)', 'Absolute solvation free energies. Zwitterions. Protic solvents. Ionic species. Default recommendation for systems in water.'],
+    ['COSMO-RS / DCOSMO-RS', 'Statistical-thermodynamic', 'Yes (from σ-profile)', 'ΔG_binding, pKa, chemical potential in mixture. DCOSMO-RS for geometry optimization. Most accurate for free energy differences.'],
+    ['Explicit + continuum', 'Micro-solvation', 'Full', 'When solvent molecules participate in the reaction mechanism, form strong directional H-bonds, or when continuum models diverge.']
+  ]},
+
+{ type:'text', title:'The Solvent Model: Recommendations',
+  body:'The choice of solvation model must match the <strong>chemical nature of the system</strong> and the property being computed. The three decisions — functional, basis, solvent — are coupled: changing one without reconsidering the others can produce internally inconsistent results.',
+  insights:[
+    { label:'Ionic systems and zwitterions in polar solvents: SMD minimum', text:'COSMO and CPCM are insufficient. SMD is the minimum acceptable choice. COSMO-RS is preferred when absolute free energy accuracy is required. For geometry optimization in solution: DCOSMO-RS (COSMO-RS is not available for gradients).' },
+    { label:'Neutral molecules in apolar solvents: CPCM or IEFPCM acceptable', text:'When the solute-solvent interaction is predominantly electrostatic and the surface does not change significantly during the process, the purely electrostatic models are adequate and computationally simpler.' },
+    { label:'When to use vacuum: only for gas-phase observables', text:'Vacuum is not an approximation for solution-phase chemistry — it is a different physical situation. It is the correct choice only when the experimental observable is intrinsically gas-phase: mass spectrometry fragmentation patterns, gas-phase electron diffraction, or when DFT is parameterizing a force field for a gas-phase or supercritical-fluid experiment (e.g. neutron diffraction with supercritical methane). The absence of a solvent model must be explicitly justified.' }
+  ], scale:'QUANTUM' },
+
+{ type:'problem', title:'What is the Predominant Species of Glyphosate in Solution?', subtitle:'The Controversy Over the Deprotonation Sequence', atlas:'Atlas #3', scale:'QUANTUM' },
+  { type:'solution', title:'B3LYP / 6-311++G(2d,2p) / SMD Resolves the Controversy', method:'B3LYP · 6-31G(d,p) vs 6-311++G(2d,2p) · IEFPCM vs SMD', finding:'With 6-31G(d,p), GLY²⁻ in water appears as species 4101, but experimental XPS shows 4200. Increasing to 6-311++G(2d,2p), the prediction reverses and 4200 becomes the most stable (58%)—diffuse functions are essential for anions. With IEFPCM, the non-ionized neutral form 4112 appears most stable; SMD correctly captures zwitterion 4211 stabilization in protic solvents through its treatment of non-electrostatic contributions. ³¹P NMR analysis confirms the sequence 4100→4200→4201→4211.', decision:'The three decisions are coupled: insufficient basis set gives the wrong species; a purely electrostatic solvent model fails to capture zwitterion stabilization. The B3LYP/6-311++G(2d,2p)/SMD combination resolved a long-standing controversy over the glyphosate deprotonation sequence.', scale:'QUANTUM', solutionImgs:['imagenes_extraidas_metadatos/1-s2_0-S2667022422000780-main__1_/img_p2_3.png','imagenes_extraidas_metadatos/1-s2_0-S2667022422000780-main__1_/img_p3_6.png'] },
+
+  { type:'problem', title:'Which Tautomeric Form Predominates and How Do Substituents Influence It?', subtitle:'Nitrile–Ketenimine Equilibrium in Unsaturated Malononitriles: Isotopic MS + DFT', atlas:'Atlas #16', scale:'QUANTUM' },
+  { type:'solution', title:'B3LYP / 6-311++G(d,p) / Vacuum: Three Decisions Consistent with Experiment', method:'B3LYP · 6-311++G(d,p) · No solvent model (Gas-phase MS)', finding:'The goal is to compare the relative stability of tautomers (nitrile, ketenimine A, ketenimine B) and link them to deuterated species populations observed in mass spectrometry. B3LYP is the natural choice: systematic error cancellation when subtracting energies of constitutional isomers with the same atomic composition makes relative trends robust. The 6-311++G(d,p) basis provides triple-zeta flexibility for geometric differences (C≡N vs C=C=NH), polarization for electronic redistribution, and critical diffuse functions for anionic species generated to resolve discrepancies (without diffuse functions, relative energies of anions are deficient). The absence of a solvent model is not an oversight: MS operates in the gas phase, and the target correlation is between vacuum energies and vacuum fragmentation patterns. Including PCM would introduce an environment that does not exist at the time of measurement. When predictions disagree (ketenimine B form experimentally favored in FPIM but not as a neutral form), the analysis of anionic species—where diffuse functions prove their worth—resolves the discrepancy.', decision:'The coherence between the three decisions and the experimental observable is what makes the work successful. They do not seek absolute precision but relative trends (ΔG ~ 17–23 kcal/mol favoring the nitrile). This illustrates the inverse decision of the glyphosate case: just as vacuum can be qualitatively incorrect for a system in solution, a solvent model would be artificially incorrect for a gas-phase observable.', scale:'QUANTUM', solutionImgs:['imagenes_extraidas_metadatos/J_/img_p8_7.png','imagenes_extraidas_metadatos/J_/img_p9_8.png'] },
+
+  { type:'problem', title:'What is the Real Atomic Structure of GOFs with DBA Linkers?', subtitle:'Three Models in Literature, None Reproduced d₀₀₁ ≈ 9.3 Å and Its Expansion Under Supercritical Gas', atlas:'Atlas #17', scale:'QUANTUM', problemImg:'imagenes_extraidas_metadatos/lombardi/img_p0_0.png' },
+  { type:'solution', title:'DFT as the First Link: Parameterizing the Force Field, Not Predicting the Observable', method:'B3LYP / 6-31G(d) / Vacuum → CHARMM22 → MD with NAMD2 → Neutron Diffraction', finding:'Unlike the tautomer paper, here DFT does not directly produce the observable. What B3LYP/6-31G(d)/Gaussian09 does is parameterize CHARMM22: equilibrium geometries of DBA+coronene fragments, force constants for bonds/angles, dihedral parameters ("soft" degrees of freedom, k_χ ~ 2.5 kcal/mol for OBCC dihedrals), and Mulliken charges. Van der Waals (dispersion) parameters come from CGenFF—a transparent decision that bypasses B3LYP\'s main limitation without D3 corrections. The 6-31G(d) basis is sufficient because we seek local PES curvatures, not absolute energies; systematic errors cancel when taking second derivatives. No diffuse functions because all fragments are neutral. No solvent because the experiment is neutron diffraction with supercritical gases (methane, xenon). Of the four structural models tested, only the CA-GOF (linkers at quasi-random angles) simultaneously reproduces the d₀₀₁ spacing and its monotonic expansion with P—indirectly validating the DFT parameterization.', decision:'The three decisions are not made in the abstract but based on DFT\'s role in the workflow. When DFT is the first link in a multiscale chain, the basis set can be more modest (local parameters) and dispersion is handled by the empirical force field. Contrast this with the Garófalo case: there, DFT is the final method, the basis set must be large, and the three decisions directly impact the observable.', scale:'QUANTUM', solutionImgs:['imagenes_extraidas_metadatos/lombardi/img_p1_8.png','imagenes_extraidas_metadatos/lombardi/img_p3_10.png'] },
+
+  { type:'text', title:'Limitation of the Quantum Level',
+    body:'DFT describes <strong>isolated molecules</strong> or molecular pairs in vacuum. A reactor contains ≈10²³ molecules interacting simultaneously. We need to average over the configuration space.',
+    insights:[
+      { label:'The averaging problem', text:'The energy of a single configuration is not observable. Experiments measure thermodynamic values averaged over millions of configurations.' },
+      { label:'Next level', text:'Statistical Thermodynamics provides the mathematical bridge between microscopic energy (DFT) and observable macroscopic properties.' }
+    ], scale:'QUANTUM' },
+
+  // BRIDGE
+  { type:'section', title:'Statistical Thermodynamics', subtitle:'From molecule to macroscopic observable', scale:'BRIDGE' },
+  { type:'glass', title:'The Canonical Partition Function',
+    eq:'\\[ Z = \\sum_i e^{-\\beta E_i} \\qquad \\beta = \\frac{1}{k_{\\mathrm{B}} T} \\]',
+    caption:'Z sums the Boltzmann weight e^{−βE} over every accessible microstate. β = 1/k_BT sets the energy scale: at high T all states are nearly equally probable; at low T the lowest-energy states dominate.',
+    points:[
+      'The canonical ensemble fixes N, V, T. The system exchanges energy with a thermal reservoir but not particles. The probability of microstate i is P_i = e^{−βE_i}/Z — Z is the normalization that makes all probabilities sum to one.',
+      'A small energy difference of k_BT (~0.6 kcal/mol at 300 K) between two states changes their relative population by a factor of e ≈ 2.7. States within ~1.5 kcal/mol of the minimum are significantly populated at room temperature.',
+      'Z is not just a normalization constant. It encodes the entire thermodynamic behavior of the system: every macroscopic observable is a derivative of ln Z.'
+    ], scale:'BRIDGE',
+    svg:`<svg viewBox="0 0 280 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;border:1px solid #d0d7e0;border-radius:6px;background:#fff;margin-top:0.5rem;">
+  <text x="140" y="13" font-size="9" font-family="monospace" fill="#6e7a8a" text-anchor="middle" letter-spacing="1">ENERGY LANDSCAPE · BOLTZMANN WEIGHTS</text>
+  <path d="M20,110 C35,110 38,55 55,55 C72,55 75,90 95,90 C115,90 118,40 140,40 C162,40 165,75 185,75 C205,75 208,100 230,100 C252,100 255,65 270,65" fill="none" stroke="#3b4252" stroke-width="1.8"/>
+  <line x1="20" y1="20" x2="20" y2="130" stroke="#d0d7e0" stroke-width="1"/>
+  <text x="14" y="75" font-size="8" font-family="monospace" fill="#94a3b8" text-anchor="middle" transform="rotate(-90,14,75)">E</text>
+  <line x1="55" y1="55" x2="55" y2="130" stroke="#1a3a5c" stroke-width="1" stroke-dasharray="3,2" opacity="0.5"/>
+  <circle cx="55" cy="55" r="3.5" fill="#1a3a5c"/>
+  <text x="55" y="143" font-size="7" font-family="monospace" fill="#1a3a5c" text-anchor="middle">i=1</text>
+  <rect x="36" y="118" width="38" height="10" rx="2" fill="#1a3a5c" fill-opacity="0.18"/>
+  <text x="55" y="126" font-size="6.5" font-family="monospace" fill="#1a3a5c" text-anchor="middle">e^−βE₁ (large)</text>
+  <line x1="140" y1="40" x2="140" y2="130" stroke="#c8a96e" stroke-width="1" stroke-dasharray="3,2" opacity="0.5"/>
+  <circle cx="140" cy="40" r="4.5" fill="#c8a96e"/>
+  <text x="140" y="143" font-size="7" font-family="monospace" fill="#c8a96e" text-anchor="middle">i=2</text>
+  <rect x="116" y="116" width="48" height="12" rx="2" fill="#c8a96e" fill-opacity="0.2"/>
+  <text x="140" y="126" font-size="7" font-family="monospace" fill="#8b6a20" text-anchor="middle">e^−βE₂ (max)</text>
+  <line x1="230" y1="100" x2="230" y2="130" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2" opacity="0.5"/>
+  <circle cx="230" cy="100" r="3" fill="#94a3b8"/>
+  <text x="230" y="143" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">i=3</text>
+  <rect x="211" y="118" width="38" height="10" rx="2" fill="#94a3b8" fill-opacity="0.15"/>
+  <text x="230" y="126" font-size="6.5" font-family="monospace" fill="#94a3b8" text-anchor="middle">e^−βE₃ (small)</text>
+  <text x="148" y="30" font-size="9" font-family="monospace" fill="#3b4252" text-anchor="start">Z = Σ e^−βEᵢ</text>
+</svg>`},
+
+  { type:'text', title:'From Z to Macroscopic Properties',
+    body:'Every thermodynamic observable is a <strong>derivative of ln Z</strong>. A single function generates the entire thermodynamic description — no separate derivation needed for each property.',
+    insights:[
+      { label:'Internal energy — ⟨E⟩ = −∂ ln Z / ∂β', text:'The average energy is the Boltzmann-weighted mean over all microstates. At low T, ⟨E⟩ approaches the ground-state energy; at high T all states contribute equally. The DFT energies E_i feed directly into this average through the Boltzmann weights e^{−βE_i}.' },
+      { label:'Helmholtz free energy — F = −k_BT ln Z', text:'F is the thermodynamic potential minimized at equilibrium for constant N, V, T. Differences in F give equilibrium constants, chemical potentials, and phase boundaries. It balances energy and entropy: F = ⟨E⟩ − TS. A state is stable not because it is lowest in energy, but because it minimizes F.' },
+      { label:'Entropy — S = k_B (ln Z + β⟨E⟩)', text:'Entropy measures how spread the probability distribution is over accessible microstates. A system confined to one state has S = 0; one spread over many has high S. Temperature determines the competition: at low T, energy wins; at high T, entropy wins. This balance drives conformational equilibria, phase transitions, and adsorption selectivity.' }
+    ], scale:'BRIDGE',
+    svg:`<svg viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;border:1px solid #d0d7e0;border-radius:6px;background:#fff;">
+  <text x="150" y="13" font-size="9" font-family="monospace" fill="#6e7a8a" text-anchor="middle" letter-spacing="1">Z AS THE GENERATOR OF THERMODYNAMICS</text>
+  <rect x="114" y="22" width="72" height="22" rx="3" fill="#f7f5f0" stroke="#c8a96e" stroke-width="1.5"/>
+  <text x="150" y="37" font-size="9" font-family="monospace" fill="#8b6a20" text-anchor="middle" font-weight="bold">ln Z</text>
+  <line x1="150" y1="44" x2="60" y2="68" stroke="#d0d7e0" stroke-width="1.2"/>
+  <line x1="150" y1="44" x2="150" y2="68" stroke="#d0d7e0" stroke-width="1.2"/>
+  <line x1="150" y1="44" x2="240" y2="68" stroke="#d0d7e0" stroke-width="1.2"/>
+  <rect x="18" y="68" width="84" height="20" rx="3" fill="#e8f0f8" stroke="#1a3a5c" stroke-width="1"/>
+  <text x="60" y="82" font-size="7.5" font-family="monospace" fill="#1a3a5c" text-anchor="middle">⟨E⟩ = −∂lnZ/∂β</text>
+  <rect x="108" y="68" width="84" height="20" rx="3" fill="#e8f4ec" stroke="#1a4a2e" stroke-width="1"/>
+  <text x="150" y="82" font-size="7.5" font-family="monospace" fill="#1a4a2e" text-anchor="middle">F = −k_BT lnZ</text>
+  <rect x="198" y="68" width="84" height="20" rx="3" fill="#f8f4e8" stroke="#3a2a1a" stroke-width="1"/>
+  <text x="240" y="82" font-size="7.5" font-family="monospace" fill="#3a2a1a" text-anchor="middle">S = k_B(lnZ+β⟨E⟩)</text>
+  <line x1="150" y1="88" x2="150" y2="108" stroke="#d0d7e0" stroke-width="1.2"/>
+  <rect x="90" y="108" width="120" height="18" rx="3" fill="#f7f5f0" stroke="#d0d7e0" stroke-width="1"/>
+  <text x="150" y="120" font-size="7.5" font-family="monospace" fill="#6e7a8a" text-anchor="middle">μ, p, Cp, χ, κ, ...</text>
+</svg>`},
+
+  { type:'glass', title:'The Grand Canonical Partition Function',
+    eq:'\\[ \\Xi = \\sum_{N=0}^{\\infty}\\sum_i e^{-\\beta(E_i - \\mu N)} \\qquad \\Omega = -k_{\\mathrm{B}}T\\ln\\Xi \\]',
+    caption:'Ξ generalizes Z to open systems where N fluctuates. The chemical potential μ controls particle exchange with the reservoir. For an ideal gas in contact with a pore, fixing the gas pressure P fixes μ, which fixes the simulation conditions exactly.',
+    points:[
+      'The grand canonical ensemble fixes μ, V, T. Both energy and particle number N fluctuate freely. This is the natural ensemble for a porous material exposed to a gas reservoir at pressure P, because the experiment fixes P (→ μ) and measures ⟨N⟩ — exactly what Ξ computes.',
+      'The adsorption isotherm follows directly: ⟨N⟩ = k_BT ∂ln Ξ/∂μ. The amount adsorbed at each pressure is a derivative of ln Ξ, just as ⟨E⟩ was a derivative of ln Z. The mathematical structure is identical; only the ensemble changes.',
+      'The grand potential Ω = −k_BT ln Ξ plays the same role as F in the canonical ensemble. Differences in Ω give adsorption free energies, selectivities, and phase coexistence conditions in confined systems.'
+    ], scale:'BRIDGE',
+    svg:`<svg viewBox="0 0 300 148" xmlns="http://www.w3.org/2000/svg" style="width:100%;border:1px solid #d0d7e0;border-radius:6px;background:#fff;">
+  <text x="150" y="13" font-size="9" font-family="monospace" fill="#6e7a8a" text-anchor="middle" letter-spacing="1">CANONICAL vs GRAND CANONICAL</text>
+  <line x1="150" y1="18" x2="150" y2="140" stroke="#e8ecf0" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="75" y="30" font-size="8" font-family="monospace" fill="#1a3a5c" text-anchor="middle">Canonical (NVT)</text>
+  <rect x="18" y="36" width="114" height="60" rx="4" fill="#e8f0f8" stroke="#1a3a5c" stroke-width="1"/>
+  <circle cx="48" cy="58" r="5" fill="#1a3a5c" opacity="0.6"/>
+  <circle cx="68" cy="50" r="5" fill="#1a3a5c" opacity="0.6"/>
+  <circle cx="90" cy="62" r="5" fill="#1a3a5c" opacity="0.6"/>
+  <circle cx="58" cy="76" r="5" fill="#1a3a5c" opacity="0.6"/>
+  <circle cx="108" cy="54" r="5" fill="#1a3a5c" opacity="0.6"/>
+  <text x="75" y="110" font-size="7" font-family="monospace" fill="#1a3a5c" text-anchor="middle">N fixed · E fluctuates</text>
+  <text x="75" y="120" font-size="7" font-family="monospace" fill="#1a3a5c" text-anchor="middle">F = −k_BT ln Z</text>
+  <text x="75" y="132" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">→ ⟨E⟩, S, p, Cp</text>
+  <text x="225" y="30" font-size="8" font-family="monospace" fill="#1a4a2e" text-anchor="middle">Grand Canonical (μVT)</text>
+  <rect x="168" y="36" width="114" height="60" rx="4" fill="#e8f4ec" stroke="#1a4a2e" stroke-width="1"/>
+  <circle cx="192" cy="56" r="5" fill="#1a4a2e" opacity="0.6"/>
+  <circle cx="214" cy="66" r="5" fill="#1a4a2e" opacity="0.6"/>
+  <circle cx="236" cy="50" r="5" fill="#1a4a2e" opacity="0.6"/>
+  <circle cx="258" cy="62" r="5" fill="#1a4a2e" opacity="0.6"/>
+  <circle cx="202" cy="78" r="5" fill="#1a4a2e" opacity="0.3" stroke="#1a4a2e" stroke-width="1" stroke-dasharray="2,1"/>
+  <circle cx="248" cy="74" r="5" fill="#1a4a2e" opacity="0.3" stroke="#1a4a2e" stroke-width="1" stroke-dasharray="2,1"/>
+  <text x="225" y="110" font-size="7" font-family="monospace" fill="#1a4a2e" text-anchor="middle">N and E fluctuate</text>
+  <text x="225" y="120" font-size="7" font-family="monospace" fill="#1a4a2e" text-anchor="middle">Ω = −k_BT ln Ξ</text>
+  <text x="225" y="132" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">→ ⟨N⟩, isotherm, selectivity</text>
+</svg>`},
+
+  { type:'text', title:'The Bridge to Monte Carlo: Sampling Instead of Summing',
+    body:'Computing Z or Ξ exactly requires summing over <strong>all microstates</strong> — an impossible task for 10²³ particles. The solution is to sample only the configurations that matter.',
+    insights:[
+      { label:'The dimensionality problem', text:'The configuration space of N particles has 3N dimensions. For a system of 500 molecules in a pore, that is 1500 dimensions. Exhaustive enumeration is impossible. But most of that space has negligible Boltzmann weight — states with energy far above the minimum contribute essentially nothing to Z. Only a tiny fraction of configurations need to be visited.' },
+      { label:'Von Neumann and Ulam, 1947 — random sampling of integrals', text:'Working at Los Alamos, John von Neumann and Stanislaw Ulam proposed using sequences of random numbers to evaluate high-dimensional integrals that are analytically intractable. The key insight: if you can generate a random sample from the correct probability distribution, the average over that sample converges to the true ensemble average — without ever computing Z explicitly.' },
+      { label:'The Markov chain — constructing the correct distribution', text:'Monte Carlo builds a sequence of configurations where each one is generated from the previous by a random move. If the transition rules satisfy detailed balance — the probability of going from state A to state B equals the probability of the reverse, weighted by Boltzmann factors — the chain converges to the Boltzmann distribution. The system finds the important regions of configuration space automatically.' }
+    ], scale:'BRIDGE' },
+
+  { type:'glass', title:'The Metropolis Acceptance Rule',
+    eq:'\\[ P_{\\mathrm{acc}} = \\min\\!\\left(1,\\, e^{-\\beta \\Delta E}\\right) \\]',
+    caption:'Proposed by Metropolis et al. (1953), building on Von Neumann and Ulam\'s framework. This simple rule guarantees that the Markov chain samples configurations with frequency proportional to e^{−βE} — the Boltzmann distribution — without ever computing Z.',
+    points:[
+      'A random move is proposed (displacement, insertion, or deletion). ΔE = E_new − E_old is calculated. If ΔE ≤ 0 the move is always accepted. If ΔE > 0 the move is accepted with probability e^{−βΔE}: a random number r ∈ [0,1] is drawn and the move accepted if r < e^{−βΔE}.',
+      'At high T (small β), e^{−βΔE} ≈ 1 — uphill moves are almost always accepted and the system explores freely. At low T (large β), e^{−βΔE} ≈ 0 — only downhill moves are accepted and the system is trapped near minima. Temperature controls the balance between exploration and exploitation.',
+      'Detailed balance is satisfied by construction: the ratio of acceptance probabilities for A→B and B→A equals e^{−β(E_B−E_A)}, which is exactly the ratio of Boltzmann weights. This guarantees convergence to the correct distribution regardless of the starting configuration.'
+    ], scale:'BRIDGE',
+    svg:`<svg viewBox="0 0 300 165" xmlns="http://www.w3.org/2000/svg" style="width:100%;border:1px solid #d0d7e0;border-radius:6px;background:#fff;">
+  <text x="150" y="13" font-size="9" font-family="monospace" fill="#6e7a8a" text-anchor="middle" letter-spacing="1">METROPOLIS DECISION CYCLE</text>
+  <rect x="100" y="20" width="100" height="22" rx="3" fill="#f7f5f0" stroke="#3b4252" stroke-width="1.2"/>
+  <text x="150" y="35" font-size="8" font-family="monospace" fill="#3b4252" text-anchor="middle">propose random move</text>
+  <line x1="150" y1="42" x2="150" y2="58" stroke="#3b4252" stroke-width="1" marker-end="url(#arr)"/>
+  <rect x="95" y="58" width="110" height="22" rx="3" fill="#f7f5f0" stroke="#3b4252" stroke-width="1.2"/>
+  <text x="150" y="73" font-size="8" font-family="monospace" fill="#3b4252" text-anchor="middle">compute ΔE</text>
+  <line x1="150" y1="80" x2="150" y2="96" stroke="#3b4252" stroke-width="1" marker-end="url(#arr)"/>
+  <rect x="108" y="96" width="84" height="22" rx="3" fill="#f7f5f0" stroke="#c8a96e" stroke-width="1.5"/>
+  <text x="150" y="111" font-size="8" font-family="monospace" fill="#8b6a20" text-anchor="middle">ΔE ≤ 0 ?</text>
+  <line x1="108" y1="107" x2="48" y2="107" stroke="#1a4a2e" stroke-width="1" marker-end="url(#arrt)"/>
+  <text x="78" y="103" font-size="7" font-family="monospace" fill="#1a4a2e" text-anchor="middle">yes</text>
+  <rect x="8" y="96" width="40" height="22" rx="3" fill="#e8f4ec" stroke="#1a4a2e" stroke-width="1.2"/>
+  <text x="28" y="111" font-size="8" font-family="monospace" fill="#1a4a2e" text-anchor="middle">accept</text>
+  <line x1="192" y1="107" x2="252" y2="107" stroke="#3b4252" stroke-width="1" marker-end="url(#arrg)"/>
+  <text x="222" y="103" font-size="7" font-family="monospace" fill="#3b4252" text-anchor="middle">no</text>
+  <rect x="252" y="96" width="42" height="22" rx="3" fill="#f7f5f0" stroke="#3b4252" stroke-width="1.2"/>
+  <text x="273" y="107" font-size="7.5" font-family="monospace" fill="#3b4252" text-anchor="middle">draw r</text>
+  <text x="273" y="116" font-size="7.5" font-family="monospace" fill="#3b4252" text-anchor="middle">∈ [0,1]</text>
+  <line x1="273" y1="118" x2="273" y2="134" stroke="#3b4252" stroke-width="1" marker-end="url(#arrg)"/>
+  <rect x="230" y="134" width="86" height="22" rx="3" fill="#f7f5f0" stroke="#c8a96e" stroke-width="1.5"/>
+  <text x="273" y="149" font-size="7.5" font-family="monospace" fill="#8b6a20" text-anchor="middle">r &lt; e^{−βΔE} ?</text>
+  <line x1="230" y1="145" x2="48" y2="145" stroke="#1a4a2e" stroke-width="1" marker-end="url(#arrt)"/>
+  <text x="139" y="141" font-size="7" font-family="monospace" fill="#1a4a2e" text-anchor="middle">yes → accept</text>
+  <line x1="273" y1="156" x2="273" y2="164" stroke="#8b2020" stroke-width="1"/>
+  <text x="273" y="164" font-size="7" font-family="monospace" fill="#8b2020" text-anchor="middle">no → reject, keep old</text>
+  <line x1="28" y1="118" x2="28" y2="160" stroke="#1a4a2e" stroke-width="0.8" stroke-dasharray="3,2"/>
+  <line x1="28" y1="160" x2="140" y2="160" stroke="#1a4a2e" stroke-width="0.8" stroke-dasharray="3,2"/>
+  <line x1="140" y1="160" x2="140" y2="42" stroke="#1a4a2e" stroke-width="0.8" stroke-dasharray="3,2" marker-end="url(#arrt)"/>
+  <text x="84" y="158" font-size="6.5" font-family="monospace" fill="#94a3b8" text-anchor="middle">new current state → next move</text>
+  <defs>
+    <marker id="arr" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L0,5 L5,2.5 Z" fill="#3b4252"/></marker>
+    <marker id="arrt" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L0,5 L5,2.5 Z" fill="#1a4a2e"/></marker>
+    <marker id="arrg" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L0,5 L5,2.5 Z" fill="#3b4252"/></marker>
+  </defs>
+</svg>`},
+
+  // MC
+  { type:'section', title:'Monte Carlo: Adsorption', subtitle:'How much fits and with what selectivity?', scale:'MONTE CARLO' },
+  { type:'glass', title:'Grand Canonical Ensemble (μVT)',
+    eq:'\\[ P_{acc}^{ins} = \\min\\!\\left(1,\\, \\frac{V}{N+1}\\frac{z}{\\Lambda^3}\\, e^{-\\beta \\Delta U}\\right) \\]',
+    caption:'Acceptance criterion for particle insertion. For deletion: V/(N·Λ³·z) · e^{−βΔU}. Here z = e^{βμ}/Λ³ is the fugacity.',
+    points:[
+      'In the μVT ensemble, μ, V, and T are fixed; N fluctuates. This replicates a pore in contact with a reservoir at fixed chemical potential.',
+      'Three move types: insertion (creates a molecule at a random position), deletion (removes a random molecule), and displacement (moves a molecule). Each has its own acceptance rule that satisfies detailed balance.',
+      'The direct result is the adsorption isotherm: ⟨N⟩ as a function of pressure P (or equivalently μ), obtained from the fluctuating particle count.'
+    ], scale:'MONTE CARLO',
+    image:'MONTE CARLO (GCMC)\nConcept: A pore, molecules appearing/disappearing, fluctuating counter. Label: "μ, V, T = constants"',
+    svg:`<svg viewBox="0 0 300 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;border:1px solid #d0d7e0;border-radius:6px;background:#fff;margin-top:0.5rem;">
+  <text x="150" y="13" font-size="9" font-family="monospace" fill="#6e7a8a" text-anchor="middle" letter-spacing="1">GRAND CANONICAL ENSEMBLE (μVT)</text>
+  <!-- Reservoir box (left) -->
+  <rect x="8" y="22" width="70" height="90" rx="4" fill="#f0f4f8" stroke="#1a3a5c" stroke-width="1.2"/>
+  <text x="43" y="36" font-size="8" font-family="monospace" fill="#1a3a5c" text-anchor="middle">reservoir</text>
+  <!-- molecules in reservoir -->
+  <circle cx="22" cy="50" r="3.5" fill="#1a3a5c" opacity="0.5"/>
+  <circle cx="38" cy="55" r="3.5" fill="#1a3a5c" opacity="0.5"/>
+  <circle cx="55" cy="48" r="3.5" fill="#1a3a5c" opacity="0.5"/>
+  <circle cx="30" cy="68" r="3.5" fill="#1a3a5c" opacity="0.5"/>
+  <circle cx="50" cy="70" r="3.5" fill="#1a3a5c" opacity="0.5"/>
+  <circle cx="20" cy="78" r="3.5" fill="#1a3a5c" opacity="0.5"/>
+  <circle cx="62" cy="82" r="3.5" fill="#1a3a5c" opacity="0.5"/>
+  <text x="43" y="105" font-size="7" font-family="monospace" fill="#1a3a5c" text-anchor="middle">fixed μ</text>
+
+  <!-- coupling arrows -->
+  <line x1="78" y1="55" x2="110" y2="55" stroke="#c8a96e" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="94" y="50" font-size="7" font-family="monospace" fill="#c8a96e" text-anchor="middle">insert</text>
+  <line x1="110" y1="72" x2="78" y2="72" stroke="#8b2020" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="94" y="85" font-size="7" font-family="monospace" fill="#8b2020" text-anchor="middle">delete</text>
+
+  <!-- Pore box (center) -->
+  <rect x="110" y="22" width="100" height="90" rx="4" fill="#f7f5f0" stroke="#3b4252" stroke-width="1.5"/>
+  <text x="160" y="36" font-size="8" font-family="monospace" fill="#3b4252" text-anchor="middle">simulation pore</text>
+  <!-- molecules in pore: some solid, one ghost (being inserted), one with X (being deleted) -->
+  <circle cx="130" cy="58" r="4" fill="#1a3a5c" opacity="0.8"/>
+  <circle cx="155" cy="52" r="4" fill="#1a3a5c" opacity="0.8"/>
+  <circle cx="178" cy="60" r="4" fill="#1a3a5c" opacity="0.8"/>
+  <circle cx="140" cy="75" r="4" fill="#1a3a5c" opacity="0.8"/>
+  <!-- ghost insertion -->
+  <circle cx="168" cy="78" r="4" fill="#c8a96e" fill-opacity="0.35" stroke="#c8a96e" stroke-width="1" stroke-dasharray="2,1"/>
+  <text x="168" y="82" font-size="6" font-family="monospace" fill="#c8a96e" text-anchor="middle">+</text>
+  <!-- displacement arrow -->
+  <line x1="130" y1="58" x2="138" y2="52" stroke="#94a3b8" stroke-width="1" marker-end="url(#arrg)"/>
+  <!-- N counter -->
+  <rect x="118" y="96" width="84" height="12" rx="2" fill="#e8ecf0"/>
+  <text x="160" y="105" font-size="7.5" font-family="monospace" fill="#3b4252" text-anchor="middle">N = 5 ± fluctuates</text>
+
+  <!-- Right: results -->
+  <rect x="222" y="22" width="72" height="90" rx="4" fill="#e8f4ec" stroke="#1a4a2e" stroke-width="1.2"/>
+  <text x="258" y="36" font-size="8" font-family="monospace" fill="#1a4a2e" text-anchor="middle">output</text>
+  <!-- mini isotherm -->
+  <line x1="232" y1="85" x2="288" y2="85" stroke="#1a4a2e" stroke-width="0.8"/>
+  <line x1="232" y1="45" x2="232" y2="85" stroke="#1a4a2e" stroke-width="0.8"/>
+  <path d="M232,83 C242,80 250,70 258,60 C266,52 274,48 288,47" fill="none" stroke="#1a4a2e" stroke-width="1.8"/>
+  <text x="258" y="95" font-size="6.5" font-family="monospace" fill="#1a4a2e" text-anchor="middle">⟨N⟩ vs P</text>
+  <text x="258" y="105" font-size="7" font-family="monospace" fill="#1a4a2e" text-anchor="middle">isotherm</text>
+
+  <!-- bottom labels: fixed vars -->
+  <text x="150" y="126" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">μ fixed · V fixed · T fixed · N fluctuates</text>
+  <text x="150" y="137" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">satisfies detailed balance at each step</text>
+
+  <defs>
+    <marker id="arrg" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+      <path d="M0,0 L0,5 L5,2.5 Z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+</svg>`},
+  { type:'text', title:'Stochastic Sampling: What We Gain and Lose',
+    body:'We insert, delete, and move particles using random numbers to sample <strong>configuration space weighted by Boltzmann factors</strong>. We do not follow trajectories: we generate a Markov chain that converges to the grand canonical distribution.',
+    insights:[
+      { label:'The gain', text:'We directly obtain the adsorption isotherm, binary selectivity, and spatial distribution of molecules in the pore without solving differential equations.' },
+      { label:'The limitation', text:'We lose the time dimension: MC has no dynamics. Move sequences are not physical trajectories, so diffusivities and time-dependent properties are inaccessible.' },
+      { label:'The input', text:'Force fields (Lennard-Jones ε, σ parameters and partial charges) come directly from DFT calculations at the quantum level.' }
+    ], scale:'MONTE CARLO',
+    svg:`<svg viewBox="0 0 300 145" xmlns="http://www.w3.org/2000/svg" style="width:100%;border:1px solid #d0d7e0;border-radius:6px;background:#fff;">
+  <text x="150" y="13" font-size="9" font-family="monospace" fill="#6e7a8a" text-anchor="middle" letter-spacing="1">MC vs MD — SAME SPACE, DIFFERENT PATHS</text>
+  <!-- divider -->
+  <line x1="150" y1="18" x2="150" y2="135" stroke="#e8ecf0" stroke-width="1" stroke-dasharray="4,3"/>
+
+  <!-- LEFT: MC random jumps -->
+  <text x="75" y="28" font-size="8" font-family="monospace" fill="#1a4a2e" text-anchor="middle">Monte Carlo</text>
+  <text x="75" y="38" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">Markov chain (no time)</text>
+  <!-- scattered points connected by non-sequential dashed lines -->
+  <circle cx="40" cy="75" r="3.5" fill="#1a4a2e" opacity="0.7"/>
+  <circle cx="95" cy="58" r="3.5" fill="#1a4a2e" opacity="0.7"/>
+  <circle cx="60" cy="95" r="3.5" fill="#1a4a2e" opacity="0.7"/>
+  <circle cx="110" cy="85" r="3.5" fill="#1a4a2e" opacity="0.7"/>
+  <circle cx="75" cy="112" r="3.5" fill="#1a4a2e" opacity="0.7"/>
+  <circle cx="30" cy="108" r="3.5" fill="#1a4a2e" opacity="0.7"/>
+  <circle cx="120" cy="65" r="3.5" fill="#1a4a2e" opacity="0.7"/>
+  <line x1="40" y1="75" x2="95" y2="58" stroke="#1a4a2e" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+  <line x1="95" y1="58" x2="30" y2="108" stroke="#1a4a2e" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+  <line x1="30" y1="108" x2="110" y2="85" stroke="#1a4a2e" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+  <line x1="110" y1="85" x2="60" y2="95" stroke="#1a4a2e" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+  <line x1="60" y1="95" x2="120" y2="65" stroke="#1a4a2e" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+  <line x1="120" y1="65" x2="75" y2="112" stroke="#1a4a2e" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+  <text x="75" y="130" font-size="7" font-family="monospace" fill="#1a4a2e" text-anchor="middle">✓ isotherm  ✗ diffusivity</text>
+
+  <!-- RIGHT: MD continuous trajectory -->
+  <text x="225" y="28" font-size="8" font-family="monospace" fill="#3a1a4a" text-anchor="middle">Molecular Dynamics</text>
+  <text x="225" y="38" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">physical trajectory (time)</text>
+  <!-- smooth connected path -->
+  <path d="M168,90 C175,75 185,65 195,72 C205,80 210,95 220,88 C230,80 235,62 248,58 C260,55 268,68 275,80 C280,88 282,100 288,95" fill="none" stroke="#3a1a4a" stroke-width="1.8"/>
+  <!-- points along trajectory -->
+  <circle cx="168" cy="90" r="3" fill="#3a1a4a" opacity="0.6"/>
+  <circle cx="195" cy="72" r="3" fill="#3a1a4a" opacity="0.6"/>
+  <circle cx="220" cy="88" r="3" fill="#3a1a4a" opacity="0.6"/>
+  <circle cx="248" cy="58" r="3" fill="#3a1a4a" opacity="0.6"/>
+  <circle cx="275" cy="80" r="3" fill="#3a1a4a" opacity="0.6"/>
+  <!-- time arrow -->
+  <line x1="168" y1="118" x2="288" y2="118" stroke="#3a1a4a" stroke-width="1" marker-end="url(#arrt)" opacity="0.5"/>
+  <text x="228" y="128" font-size="7" font-family="monospace" fill="#3a1a4a" text-anchor="middle">t →</text>
+  <text x="225" y="140" font-size="7" font-family="monospace" fill="#3a1a4a" text-anchor="middle">✓ diffusivity  ✗ insertion/deletion</text>
+
+  <defs>
+    <marker id="arrt" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+      <path d="M0,0 L0,5 L5,2.5 Z" fill="#3a1a4a" opacity="0.5"/>
+    </marker>
+  </defs>
+</svg>`,
+    image:'ADSORPTION (MC RESULT)\nConcept: Split visual. Left: isotherm. Right: molecular snapshot inside the pore.' },
+
+  // MC METHODOLOGY — Tres decisiones fundamentales
+  { type:'section', title:'Monte Carlo Simulations: Three Fundamental Decisions', subtitle:'Statistical Ensemble · Boundary Conditions · Force Field', scale:'MONTE CARLO' },
+
+  { type:'text', title:'First Decision: The Statistical Ensemble',
+    body:'The choice of ensemble <strong>determines which thermodynamic magnitudes are accessible</strong> and which MC moves are admissible. It is not a formality—it is the physics of the problem.',
+    insights:[
+      { label:'NVT (Canonical)', text:'N, V, T fixed. Structural and energetic properties at fixed density. Only displacement/rotation moves. Natural starting point.' },
+      { label:'NPT (Isothermal-Isobaric)', text:'Fixes pressure instead of volume. Additional volume-change moves. Standard for parameterizing force fields (OPLS, TraPPE) against experimental densities and enthalpies.' },
+      { label:'μVT (Grand Canonical) & GEMC', text:'μVT: N fluctuates, ideal for adsorption. GEMC: two boxes with particle and volume exchange—calculates liquid-vapor coexistence diagrams without an explicit interface.' }
+    ], scale:'MONTE CARLO' },
+
+  { type:'table', title:'Statistical Ensembles: When to Use Each One', scale:'MONTE CARLO',
+    headers:['Ensemble', 'Fixed / Fluctuates', 'Additional Moves', 'Main Application'],
+    rows:[
+      ['NVT', 'N, V, T / E', '— (Translation/Rotation only)', 'Structure, g(r), energies at fixed density'],
+      ['NPT', 'N, P, T / V', 'Box volume change', 'Densities, H_vap, FF parameterization'],
+      ['μVT (GCMC)', 'μ, V, T / N', 'Particle insertion and deletion', 'Adsorption isotherms, selectivity, Q_st'],
+      ['GEMC', 'T, N_total / N₁,N₂,V₁,V₂', 'Particle exchange between boxes', 'Liquid-vapor coexistence diagrams']
+    ]},
+
+  { type:'problem', title:'Why GCMC for Adsorption? Chemical Potential as the Control Variable', subtitle:'Xe in ZIF-8 · C₂H₆/C₂H₄ in CNT · Ar/CH₄ in Exfoliated Graphite', atlas:'Atlas #1', scale:'MONTE CARLO' },
+  { type:'solution', title:'The μVT Ensemble is Inescapable for Adsorption', method:'GCMC — Three systems, same logic', finding:'Experiment imposes gas pressure (→ μ) and measures adsorption: N fluctuates. In all three systems—Xe in ZIF-8, C₂H₆/C₂H₄ in nanotube bundles, Ar/CH₄ in graphite—GCMC is the natural ensemble. For binary mixtures, insertion/deletion moves operate independently for each species, yielding selectivity S = (θ₁/θ₂)/(p₁/p₂) directly. Isosteric heat Q_st = RT − {[⟨EₜN⟩−⟨Eₜ⟩⟨N⟩]/[⟨N²⟩−⟨N⟩²]} requires N to fluctuate—an expression intrinsic to the grand canonical ensemble.', decision:'If the physics of the problem imposes chemical potential (gas pressure), GCMC is the only correct choice. NVT would give the energy of a single configuration, not the observable isotherm.', scale:'MONTE CARLO', solutionImgs:['imagenes_extraidas_metadatos/1-s2_0-S000926141630104X-main/img_p2_3.png','imagenes_extraidas_metadatos/1-s2_0-S000926141630104X-main/img_p4_6.png'] },
+
+  { type:'text', title:'Second Decision: Boundary Conditions',
+    body:'We simulate finite systems (10²–10⁵ particles) aiming to represent a macroscopic system. <strong>Periodic Boundary Conditions (PBC)</strong> eliminate surface effects but introduce two technical considerations.',
+    insights:[
+      { label:'Minimum Image & Cut-off Radius', text:'Each particle interacts with the nearest image of others. Exact for LJ (r_c ≈ 2.5σ–5σ). Insufficient for Coulombic interactions (∝1/r): Ewald summation (PME) is mandatory.' },
+      { label:'Box Size & Correlations', text:'The box must satisfy L > 2r_c. Phenomena with long correlation lengths (near phase transitions) require much larger boxes. In MOFs, the cell is an integer multiple of the crystal cell.' },
+      { label:'Confined Systems', text:'PBC in directions parallel to the surface; walls (rigid or external potentials) in the perpendicular direction. Standard for slit or cylindrical nanopores.' }
+    ], scale:'MONTE CARLO' },
+
+  { type:'solution', title:'Three Confinement Geometries, Three PBC Strategies', method:'ZIF-8 · Carbon Nanotubes · Exfoliated Graphite', finding:'ZIF-8 (Xe): 3D PBC with 2×2×2 crystal cells (~34 Å per side). For Q_st, an elongated cell (34×34×85 Å) with PBC in X,Y and reflective plane in Z is used—the same paper requires two different PBC strategies for two different properties. CNT: Bundle of three nanotubes in a triangular arrangement; substrate geometry generates 4 site types (grooves, external surface, interior, interstices). Graphite: 2D PBC + semi-infinite flat substrate. The cleanest case: only complexity is energetic/entropic competition between the two species.', decision:'Boundary condition choice is not universal—it depends on the property being calculated. The same system may require different strategies for isotherms vs. isosteric heat.', scale:'MONTE CARLO', solutionImgs:['imagenes_extraidas_metadatos/CONICET_Digital_Nro.3aa22ec7-3999-4437-90f8-451b42595a1c_B/img_p18_3.png','imagenes_extraidas_metadatos/CONICET_Digital_Nro.af8fbc3f-3334-4b6e-a799-c71e50fb86a2_A/img_p6_7.png'] },
+
+  { type:'text', title:'Third Decision: The Force Field',
+    body:'The force field is our approximation of the PES V(R). <strong>Its choice determines the physics the simulation can—and cannot—capture</strong>. Result quality is limited by the weakest link in the chain.',
+    insights:[
+      { label:'TraPPE (Fluids & Phase Equilibria)', text:'Top-down philosophy: parameters adjusted against T_c and coexistence densities. United-atom (CH₃, CH₂ as pseudoatoms) reduces degrees of freedom. Intrinsic synergy with CBMC.' },
+      { label:'UFF / DREIDING / ClayFF (Porous Materials)', text:'UFF covers the entire periodic table with rules based on atomic properties. Invaluable versatility for new materials, but limited thermodynamic accuracy (10–20% error). ClayFF treats metal-oxygen interactions as non-bonded.' },
+      { label:'Polarizability: The Pending Problem', text:'All Class I FFs use fixed charges, ignoring the dynamic electron cloud response. Works well for non-polar adsorbates; fails at interfaces and ionic systems. Drude/AMOEBA: 2–10× more expensive.' }
+    ], scale:'MONTE CARLO' },
+
+  { type:'problem', title:'When Do Standard Force Fields Fail?', subtitle:'Xe in ZIF-8: Gate-Opening and the Mixed Force Field', atlas:'Atlas #22', scale:'MONTE CARLO' },
+  { type:'solution', title:'The Mixed Force Field (MFF): Selective Family Mixing', method:'UFF* (σ) + Dreiding (ε) — Validated with CH₄ and Ar', finding:'For Xe in ZIF-8, UFF(+) reproduces the AP isotherm (pre gate-opening) but fails at HP (post gate-opening). UFF(*) has the inverse problem. Key observation: UFF(+) and UFF share the same large σ—not optimized for large adsorbates like Xe passing through ~3.4 Å windows. Solution: combine σ from UFF* (effective pore size) with ε from Dreiding (attractive well depth). The MFF reproduces both isotherms (AP and HP) and is validated with CH₄ at 125 K and Ar at 87 K with excellent agreement. For CNT: TraPPE-UA is the standard (CH₃ sp³: ε=98 K, σ=3.75 Å). For graphite: Single-center LJ (CH₄: ε=148.1 K, σ=3.81 Å) gives isosteric heats with error < 0.1%.', decision:'FFs are not interchangeable black boxes. When σ controls pore access (Xe in ZIF-8), standard parameters can fail qualitatively. Selective parameterization is legitimate but requires validation with independent data.', scale:'MONTE CARLO', solutionImgs:['imagenes_extraidas_metadatos/CONICET_Digital_Nro.af8fbc3f-3334-4b6e-a799-c71e50fb86a2_A/img_p5_6.png'] },
+
+  // CG
+  { type:'section', title:'Coarse-Grain: Spatial Scale', subtitle:'How do we simulate large-scale morphological systems?', scale:'COARSE-GRAIN' },
+  { type:'glass', title:'Integration of Degrees of Freedom',
+    eq:'\\[ V_{CG}(R) \\approx -k_B T \\ln \\int e^{-\\beta V} dr \\]',
+    caption:'If you want to see a forest move, don\'t simulate the vibration of every leaf.',
+    points:[
+      'We group N atoms into a single CG "bead". The internal dynamics of the group are integrated out: only the effective interaction potential between beads remains.',
+      'We gain 2-3 orders of magnitude in accessible time and space. We can simulate vesicles, micelles, polymer networks, and material assembly.',
+      'The price: we lose active site detail. We cannot calculate chemical reactions or high-precision molecular recognition.'
+    ], scale:'COARSE-GRAIN',
+    image:'COARSE-GRAIN\nConcept: Top: detailed molecule, bottom: large connected spheres. Arrow: "integrating degrees of freedom"',
+    svg:`<svg viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;border:1px solid #d0d7e0;border-radius:6px;background:#fff;margin-top:0.5rem;">
+  <text x="150" y="13" font-size="9" font-family="monospace" fill="#6e7a8a" text-anchor="middle" letter-spacing="1">ATOM → BEAD MAPPING (4:1)</text>
+  <!-- TOP: explicit atoms (a polymer chain segment) -->
+  <text x="150" y="28" font-size="7.5" font-family="monospace" fill="#3b4252" text-anchor="middle">all-atom representation</text>
+  <!-- chain of 12 small atoms -->
+  <g>
+    <line x1="30" y1="48" x2="270" y2="48" stroke="#d0d7e0" stroke-width="1"/>
+    <!-- 12 atoms along chain -->
+    <circle cx="30" cy="48" r="4" fill="#1a3a5c" opacity="0.8"/>
+    <circle cx="50" cy="42" r="3" fill="#94a3b8" opacity="0.6"/>
+    <circle cx="60" cy="52" r="3" fill="#94a3b8" opacity="0.6"/>
+    <circle cx="70" cy="45" r="3" fill="#94a3b8" opacity="0.6"/>
+    <circle cx="90" cy="48" r="4" fill="#1a3a5c" opacity="0.8"/>
+    <circle cx="110" cy="42" r="3" fill="#94a3b8" opacity="0.6"/>
+    <circle cx="120" cy="52" r="3" fill="#94a3b8" opacity="0.6"/>
+    <circle cx="130" cy="44" r="3" fill="#94a3b8" opacity="0.6"/>
+    <circle cx="150" cy="48" r="4" fill="#1a3a5c" opacity="0.8"/>
+    <circle cx="170" cy="43" r="3" fill="#94a3b8" opacity="0.6"/>
+    <circle cx="180" cy="53" r="3" fill="#94a3b8" opacity="0.6"/>
+    <circle cx="190" cy="46" r="3" fill="#94a3b8" opacity="0.6"/>
+    <circle cx="210" cy="48" r="4" fill="#1a3a5c" opacity="0.8"/>
+    <circle cx="230" cy="42" r="3" fill="#94a3b8" opacity="0.6"/>
+    <circle cx="240" cy="52" r="3" fill="#94a3b8" opacity="0.6"/>
+    <circle cx="250" cy="44" r="3" fill="#94a3b8" opacity="0.6"/>
+    <circle cx="270" cy="48" r="4" fill="#1a3a5c" opacity="0.8"/>
+  </g>
+
+  <!-- integrate out arrow -->
+  <text x="150" y="76" font-size="8" font-family="monospace" fill="#c8a96e" text-anchor="middle">↓  integrate out internal DOF  ↓</text>
+
+  <!-- BOTTOM: CG beads -->
+  <text x="150" y="92" font-size="7.5" font-family="monospace" fill="#4a2a1a" text-anchor="middle">coarse-grain representation</text>
+  <line x1="50" y1="115" x2="250" y2="115" stroke="#d0d7e0" stroke-width="1"/>
+  <circle cx="50" cy="115" r="11" fill="#4a2a1a" opacity="0.2" stroke="#4a2a1a" stroke-width="1.5"/>
+  <text x="50" y="119" font-size="7" font-family="monospace" fill="#4a2a1a" text-anchor="middle">1</text>
+  <circle cx="110" cy="115" r="11" fill="#4a2a1a" opacity="0.2" stroke="#4a2a1a" stroke-width="1.5"/>
+  <text x="110" y="119" font-size="7" font-family="monospace" fill="#4a2a1a" text-anchor="middle">2</text>
+  <circle cx="170" cy="115" r="11" fill="#4a2a1a" opacity="0.2" stroke="#4a2a1a" stroke-width="1.5"/>
+  <text x="170" y="119" font-size="7" font-family="monospace" fill="#4a2a1a" text-anchor="middle">3</text>
+  <circle cx="230" cy="115" r="11" fill="#4a2a1a" opacity="0.2" stroke="#4a2a1a" stroke-width="1.5"/>
+  <text x="230" y="119" font-size="7" font-family="monospace" fill="#4a2a1a" text-anchor="middle">4</text>
+  <!-- bead brackets -->
+  <text x="80" y="138" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">4 atoms/bead</text>
+  <text x="200" y="138" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">V_eff(R) remains</text>
+  <!-- gain label -->
+  <text x="150" y="150" font-size="7.5" font-family="monospace" fill="#4a2a1a" text-anchor="middle">10²–10³× faster · μm scale accessible</text>
+</svg>`},
+  { type:'text', title:'Gain vs Loss: When to Use CG',
+    body:'We lose <strong>atomic active site detail</strong>, but gain orders of magnitude in temporal and spatial scale. The key is correctly identifying which questions require atomic resolution.',
+    insights:[
+      { label:'When to use CG', text:'Self-assembly morphology, bulk transport in materials, vesicle and micelle dynamics, conformations of long polymer chains.' },
+      { label:'When to avoid CG', text:'Specific molecular recognition, selectivity calculations at active sites, chemical reactions, short-range interactions that determine affinity.' },
+      { label:'Optimal protocol', text:'Use CG to identify relevant morphological configurations, then refine with explicit atoms in the regions of interest.' }
+    ], scale:'COARSE-GRAIN' },
+
+  { type:'problem', title:'What is the limit of simplified modeling under confinement?', subtitle:'Alkanes in carbon micropores: when reduction fails', atlas:'Atlas #15', scale:'COARSE-GRAIN' },
+  { type:'solution', title:'The Coarse-Grain Limit', method:'4-to-1 CG vs explicit atom', finding:'The CG model faithfully reproduces alkane behavior in mesopores, but fails quantitatively in extreme confinements (pores < 1nm) where atomic detail dominates packing. The difference in isotherm can exceed 30%.', decision:'Use CG for bulk transport modeling and adsorption in mesopores. Switch to explicit atom representation when the pore is comparable to molecular size or when the specific active site determines the outcome.', scale:'COARSE-GRAIN', solutionImgs:['imagenes_extraidas_metadatos/hermosilla2019/img_p2_1.png','imagenes_extraidas_metadatos/hermosilla2019/img_p3_2.png'] },
+
+  { type:'text', title:'The Common Thread: Selectivity as an Emergent Property',
+    body:'In all three systems, selectivity emerges from the <strong>competition between energetic and entropic factors</strong>. At low coverage, energetics dominate; at high coverage, configurational entropy favors the smaller molecule.',
+    insights:[
+      { label:'Xe in ZIF-8', text:'Selectivity is not between two gases but between two regions of the material. The Q_st peak (~188 meV) at ~2000 μmol is an alternative thermodynamic signature to detect gate-opening.' },
+      { label:'C₂H₆/C₂H₄ in Nanotubes', text:'S_ethane/ethylene ≈ 4 at 153 K in internal sites of large tubes. In narrow (7,7) tubes, there is no displacement: lower curvature → less dense phase → suppressed entropic effects.' },
+      { label:'Ar/CH₄ in Graphite', text:'Selectivity drops upon completing the monolayer (~0.7 ML) and then rises. At low pressures: ideal mixture (IAST ≈ GCMC ≈ experiment). At high pressures: emergent non-ideality.' }
+    ], scale:'MONTE CARLO' },
+  { type:'problem', title:'How Does Linker Functionalization Modulate Selectivity Between C5 Isomers?', subtitle:'Separation of Pentane Isomers in UiO-66-H, -NH₂, -CH₃, -COOH · Separations 2025', atlas:'Atlas #22', scale:'MONTE CARLO', problemImg:'imagenes_extraidas_metadatos/separations-12-00152/img_p2_0.png' },
+  { type:'solution', title:'Direct GCMC of Mixtures: IAST Overestimates Selectivity in MOFs with Site Heterogeneity', method:'GCMC (μVT) · DREIDING+UFF(Zr) framework · TraPPE-UA adsorbates · 2×2×2 cells, r_c = 12 Å', finding:'UiO-66-NH₂ emerges as the most selective material: geometric complementarity between quasi-spherical neopentane (central C pseudoatom: σ=6.40 Å, ε/k_B=0.5 K; four peripheral CH₃) and tetrahedral cavities (~7.5 Å). Affinity hierarchy in UiO-66-NH₂: neoP >> iP > nP (b₁: 819.9 vs. 85.5 vs. 4.51). Q_st,0 reveals sequential filling: tetrahedral cavities (high affinity, ~71–80 kJ/mol) → octahedral cavities (~12 Å). Explicit treatment of n-pentane conformers (tt: 40%, tg: 53%, gg: 7%) is necessary because conformational flexibility affects packing. IAST and the Dual Process Langmuir model systematically overestimate selectivity—GCMC ternary mixtures show significant n-pentane co-adsorption that these models predict as nearly zero. UiO-66 site heterogeneity breaks mixture ideality even at moderate pressures, unlike Ar-CH₄ in graphite where IAST was quantitatively correct at low pressures.', decision:'When the adsorbent has pronounced site heterogeneity (cavities of different size and affinity), direct GCMC simulations of mixtures are indispensable. IAST fails where it matters most: it predicts a much easier separation than it actually is. The -NH₂ functionalization is the design tool; the GCMC/IAST cross-validation exposes the limits of the ideal approximation.', scale:'MONTE CARLO', solutionImgs:['imagenes_extraidas_metadatos/separations-12-00152/img_p8_4.png','imagenes_extraidas_metadatos/separations-12-00152/img_p9_5.png'] },
+
+  { type:'text', title:'The Complete Hierarchy: Electrons → Force Field → Sampling',
+    body:'The three decisions form a <strong>coupled chain</strong>. Result quality is limited by the weakest link—not the most sophisticated one.',
+    insights:[
+      { label:'Incorrect Force Field (ZIF-8)', text:'The wrong FF produces qualitatively incorrect results—it fails to capture the load increase at gate-opening—regardless of GCMC sampling quality.' },
+      { label:'Incomplete Substrate Model (CNT)', text:'Homogeneous bundles yield isosteric heats that do not match experiments at low coverage, even if TraPPE is correct. The heterogeneous substrate was the weak link.' },
+      { label:'Simple System, Exact Result (Graphite)', text:'Spherical adsorbates + flat substrate: single-center LJ + IAST + GCMC yield quantitative results. Model complexity must be proportional to system complexity.' }
+    ], scale:'MONTE CARLO' },
+
+
+
+
+
+
+  // MD
+  { type:'section', title:'Molecular Dynamics: Time', subtitle:'How do molecules move and diffuse?', scale:'DYNAMICS' },
+  { type:'glass', title:'Newton\'s Second Law',
+    eq:'\\[ m_i \\frac{d^2 \\mathbf{r}_i}{dt^2} = -\\nabla_i V \\]',
+    caption:'The quantum potential is replaced by classical force fields: springs, charges, Lennard-Jones terms.',
+    points:[
+      'We integrate the equations of motion step by step (femtosecond time steps). Each atom follows the instantaneous force from its neighbors.',
+      'Force fields (CHARMM, AMBER, OPLS) parameterize the potential V(r) from quantum and experimental data.',
+      'The result: full trajectories, diffusion coefficients, radial distribution functions, vibrational spectra.'
+    ], scale:'DYNAMICS',
+    image:'MOLECULAR DYNAMICS\nConcept: Molecules with tails showing their trajectory, on an energy surface background.' },
+  { type:'text', title:'The Temporal Limit: The Microsecond Barrier',
+    body:'We integrate step by step at <strong>femtosecond (10⁻¹⁵ s) intervals</strong>. We can see diffusion and collisions, but we are blind to slow processes like protein folding or phase rearrangements.',
+    insights:[
+      { label:'The time window', text:'Typical MD simulations reach microseconds on specialized hardware. Biologically relevant processes occur on millisecond timescales or longer.' },
+      { label:'What we see', text:'Diffusion of small molecules, polymer flexibility, protein conformations, structural relaxation of porous materials.' },
+      { label:'Transition to CG', text:'When we need to scale to micrometers or milliseconds, the representation must be simplified: this is where Coarse-Graining emerges.' }
+    ], scale:'DYNAMICS',
+    svg:`<svg viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;border:1px solid #d0d7e0;border-radius:6px;background:#fff;">
+  <text x="150" y="13" font-size="9" font-family="monospace" fill="#6e7a8a" text-anchor="middle" letter-spacing="1">TIMESCALES IN MD SIMULATION</text>
+  <!-- timeline axis -->
+  <line x1="20" y1="55" x2="285" y2="55" stroke="#d0d7e0" stroke-width="1.5"/>
+  <!-- tick marks + labels -->
+  <line x1="20" y1="50" x2="20" y2="60" stroke="#3b4252" stroke-width="1.2"/>
+  <text x="20" y="70" font-size="7" font-family="monospace" fill="#3b4252" text-anchor="middle">fs</text>
+  <text x="20" y="79" font-size="6" font-family="monospace" fill="#94a3b8" text-anchor="middle">10⁻¹⁵</text>
+
+  <line x1="65" y1="50" x2="65" y2="60" stroke="#3b4252" stroke-width="1.2"/>
+  <text x="65" y="70" font-size="7" font-family="monospace" fill="#3b4252" text-anchor="middle">ps</text>
+  <text x="65" y="79" font-size="6" font-family="monospace" fill="#94a3b8" text-anchor="middle">10⁻¹²</text>
+
+  <line x1="110" y1="50" x2="110" y2="60" stroke="#3b4252" stroke-width="1.2"/>
+  <text x="110" y="70" font-size="7" font-family="monospace" fill="#3b4252" text-anchor="middle">ns</text>
+  <text x="110" y="79" font-size="6" font-family="monospace" fill="#94a3b8" text-anchor="middle">10⁻⁹</text>
+
+  <line x1="155" y1="50" x2="155" y2="60" stroke="#3b4252" stroke-width="1.2"/>
+  <text x="155" y="70" font-size="7" font-family="monospace" fill="#3b4252" text-anchor="middle">μs</text>
+  <text x="155" y="79" font-size="6" font-family="monospace" fill="#94a3b8" text-anchor="middle">10⁻⁶</text>
+
+  <line x1="200" y1="50" x2="200" y2="60" stroke="#3b4252" stroke-width="1.2"/>
+  <text x="200" y="70" font-size="7" font-family="monospace" fill="#3b4252" text-anchor="middle">ms</text>
+  <text x="200" y="79" font-size="6" font-family="monospace" fill="#94a3b8" text-anchor="middle">10⁻³</text>
+
+  <line x1="245" y1="50" x2="245" y2="60" stroke="#3b4252" stroke-width="1.2"/>
+  <text x="245" y="70" font-size="7" font-family="monospace" fill="#3b4252" text-anchor="middle">s</text>
+  <text x="245" y="79" font-size="6" font-family="monospace" fill="#94a3b8" text-anchor="middle">10⁰</text>
+
+  <!-- MD accessible range bar -->
+  <rect x="20" y="42" width="135" height="7" rx="2" fill="#3a1a4a" fill-opacity="0.7"/>
+  <text x="77" y="40" font-size="7" font-family="monospace" fill="#3a1a4a" text-anchor="middle">MD accessible</text>
+
+  <!-- vertical wall at μs -->
+  <line x1="155" y1="20" x2="155" y2="55" stroke="#8b2020" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="158" y="28" font-size="7" font-family="monospace" fill="#8b2020">barrier</text>
+
+  <!-- events above timeline -->
+  <text x="42" y="34" font-size="6.5" font-family="monospace" fill="#3a1a4a" text-anchor="middle">bond</text>
+  <text x="42" y="42" font-size="6.5" font-family="monospace" fill="#3a1a4a" text-anchor="middle">vibration</text>
+
+  <text x="87" y="34" font-size="6.5" font-family="monospace" fill="#3a1a4a" text-anchor="middle">diffusion</text>
+  <text x="87" y="42" font-size="6.5" font-family="monospace" fill="#3a1a4a" text-anchor="middle">in pore</text>
+
+  <text x="132" y="34" font-size="6.5" font-family="monospace" fill="#3a1a4a" text-anchor="middle">polymer</text>
+  <text x="132" y="42" font-size="6.5" font-family="monospace" fill="#3a1a4a" text-anchor="middle">relaxation</text>
+
+  <!-- events beyond wall (greyed out) -->
+  <text x="178" y="34" font-size="6.5" font-family="monospace" fill="#94a3b8" text-anchor="middle">protein</text>
+  <text x="178" y="42" font-size="6.5" font-family="monospace" fill="#94a3b8" text-anchor="middle">folding</text>
+
+  <text x="222" y="34" font-size="6.5" font-family="monospace" fill="#94a3b8" text-anchor="middle">phase</text>
+  <text x="222" y="42" font-size="6.5" font-family="monospace" fill="#94a3b8" text-anchor="middle">transition</text>
+
+  <text x="262" y="34" font-size="6.5" font-family="monospace" fill="#94a3b8" text-anchor="middle">enzyme</text>
+  <text x="262" y="42" font-size="6.5" font-family="monospace" fill="#94a3b8" text-anchor="middle">catalysis</text>
+
+  <!-- CG label -->
+  <rect x="160" y="86" width="120" height="18" rx="3" fill="#f8f0e8" stroke="#4a2a1a" stroke-width="0.8"/>
+  <text x="220" y="98" font-size="7.5" font-family="monospace" fill="#4a2a1a" text-anchor="middle">→ use Coarse-Grain beyond μs</text>
+</svg>`},
+
+  { type:'problem', title:'How to prevent protein fouling in drug delivery nanovehicles?', subtitle:'Antifouling in nanogels: the biofouling problem', atlas:'Atlas #14', scale:'DYNAMICS' },
+  { type:'solution', title:'Janus Architectures as Dynamic Shield', method:'MD of amphiphilic copolymers', finding:'Simulations show that ethylene glycol (EG) patches on Janus nanoparticles form a dynamic hydrophilic layer that sterically repels plasma proteins. Architectures with random EG distribution do not achieve the same shielding effect.', decision:'Force synthesis of Janus architecture with well-defined EG patches. Random distributions of hydrophilic monomers do not protect the nanovehicle core against protein adsorption.', scale:'DYNAMICS', solutionImgs:['imagenes_extraidas_metadatos/cruz-gonz_lez-et-al-2025-impact-of-network-functionalization-on-the-surface-properties-and-behavior-of-thermoresponsive/img_p3_3.png','imagenes_extraidas_metadatos/cruz-gonz_lez-et-al-2025-impact-of-network-functionalization-on-the-surface-properties-and-behavior-of-thermoresponsive/img_p5_4.png'] },
+
+  { type:'problem', title:'How does the material expand under gas pressure?', subtitle:'Swelling dynamics in flexible GOFs', atlas:'Atlas #17', scale:'DYNAMICS', problemImg:'imagenes_extraidas_metadatos/lombardi/img_p0_1.png' },
+  { type:'solution', title:'Dynamic Swelling in Porous Materials', method:'MD in organic covalent frameworks', finding:'MD trajectories visualize the progressive structural adjustment of the GOF as it adsorbs gas: linker rotation, cell expansion, and redistribution of electron density. The dilation is anisotropic and pressure-dependent.', decision:'Incorporate structural dilation in the mechanical design of the containment device. Ignoring swelling leads to underestimating real capacity and mechanical failure in loading/unloading cycles.', scale:'DYNAMICS', solutionImgs:['imagenes_extraidas_metadatos/lombardi/img_p2_9.png','imagenes_extraidas_metadatos/lombardi/img_p3_10.png'] },
+
+
+  // THEORY
+  { type:'section', title:'Molecular Theory', subtitle:'How do we optimize collective response?', scale:'MOLECULAR THEORY' },
+  { type:'glass', title:'Free Energy Functional',
+    eq:'\\[ \\frac{\\delta \\Omega[\\rho]}{\\delta \\rho(\\mathbf{r})} = 0 \\]',
+    caption:'Mean field: we minimize the grand thermodynamic potential with respect to the density profile.',
+    points:[
+      'Instead of sampling configurations (MC) or following trajectories (MD), we directly minimize the thermodynamic functional Ω[ρ].',
+      'The equilibrium density profile ρ(r) of each species is obtained by solving a system of coupled Euler-Lagrange equations.',
+      'Allows explicit incorporation of chemical equilibria (protonation/deprotonation, complex formation) as thermodynamic variables.'
+    ], scale:'MOLECULAR THEORY',
+    image:'MOLECULAR THEORY\nConcept: Continuous density profile vs position, chemical potential as a curve.',
+    svg:`<svg viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;border:1px solid #d0d7e0;border-radius:6px;background:#fff;margin-top:0.5rem;">
+  <text x="150" y="13" font-size="9" font-family="monospace" fill="#6e7a8a" text-anchor="middle" letter-spacing="1">DENSITY PROFILES IN A FUNCTIONALIZED PORE</text>
+  <!-- axes -->
+  <line x1="30" y1="20" x2="30" y2="125" stroke="#d0d7e0" stroke-width="1"/>
+  <line x1="30" y1="125" x2="280" y2="125" stroke="#d0d7e0" stroke-width="1"/>
+  <text x="155" y="138" font-size="7.5" font-family="monospace" fill="#94a3b8" text-anchor="middle">position z across pore</text>
+  <text x="14" y="75" font-size="7.5" font-family="monospace" fill="#94a3b8" text-anchor="middle" transform="rotate(-90,14,75)">ρ(z)</text>
+
+  <!-- pore walls -->
+  <rect x="30" y="20" width="8" height="105" fill="#e8ecf0" rx="1"/>
+  <rect x="272" y="20" width="8" height="105" fill="#e8ecf0" rx="1"/>
+  <text x="34" y="17" font-size="6" font-family="monospace" fill="#94a3b8" text-anchor="middle">wall</text>
+  <text x="276" y="17" font-size="6" font-family="monospace" fill="#94a3b8" text-anchor="middle">wall</text>
+
+  <!-- pH=4: collapsed, low density profile (cationes no entran) -->
+  <path d="M38,120 C60,118 80,115 100,110 C120,105 130,100 155,98 C180,100 190,105 210,110 C230,115 250,118 272,120" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3"/>
+
+  <!-- pH=7: intermediate -->
+  <path d="M38,122 C55,110 75,85 100,65 C120,50 135,42 155,40 C175,42 190,50 210,65 C235,85 255,110 272,122" fill="none" stroke="#c8a96e" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+  <!-- pH=9: expanded brush, high density -->
+  <path d="M38,123 C50,105 65,60 85,35 C105,18 130,20 155,22 C180,20 205,18 225,35 C245,60 260,105 272,123" fill="rgba(26,58,74,0.08)" stroke="#1a3a4a" stroke-width="2"/>
+
+  <!-- legend -->
+  <line x1="170" y1="32" x2="190" y2="32" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="193" y="36" font-size="7" font-family="monospace" fill="#94a3b8">pH 4 (collapsed)</text>
+  <line x1="170" y1="46" x2="190" y2="46" stroke="#c8a96e" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="193" y="50" font-size="7" font-family="monospace" fill="#c8a96e">pH 7</text>
+  <line x1="170" y1="60" x2="190" y2="60" stroke="#1a3a4a" stroke-width="2"/>
+  <text x="193" y="64" font-size="7" font-family="monospace" fill="#1a3a4a">pH 9 (expanded)</text>
+
+  <!-- minimum annotation -->
+  <circle cx="155" cy="22" r="3.5" fill="#1a3a4a" opacity="0.6"/>
+  <line x1="155" y1="22" x2="155" y2="125" stroke="#1a3a4a" stroke-width="0.8" stroke-dasharray="2,3" opacity="0.4"/>
+  <text x="157" y="75" font-size="6.5" font-family="monospace" fill="#1a3a4a">pore center</text>
+  <text x="50" y="145" font-size="7" font-family="monospace" fill="#1a3a4a">δΩ[ρ]/δρ = 0  →  this profile minimizes the free energy</text>
+</svg>`},
+  { type:'text', title:'Chemical Equilibria and Stimulus Response',
+    body:'Instead of simulating individual particles, we <strong>minimize the thermodynamic potential</strong> with respect to continuous density profiles. This allows direct use of pH and salinity as control variables.',
+    insights:[
+      { label:'The key advantage', text:'We can calculate the protonation state of each polymer functional group as a function of local pH, which in turn depends on the ion density profile and the electrostatic potential distribution.' },
+      { label:'Ultrafast', text:'A functional minimization takes seconds of CPU time vs hours of MC. Enables systematic mapping of the design parameter space: pH, salinity, grafting density.' },
+      { label:'Mean field', text:'Short-range particle correlations and local fluctuations are lost. Suitable for collective responses, not for precise molecular recognition.' }
+    ], scale:'MOLECULAR THEORY',
+    image:'HYDROGELS / POLYMERS\nConcept: Mesh-type network, trapped molecules inside, colors by charge/pH.' },
+
+  { type:'problem', title:'Which pH maximizes agrochemical sequestration?', subtitle:'Glyphosate in responsive polymers: microenvironment engineering', atlas:'Atlas #4', scale:'MOLECULAR THEORY', problemImg:'imagenes_extraidas_metadatos/2019_Perez_A/img_p0_0.png' },
+  { type:'solution', title:'Charge Regulation by Local pH', method:'Mean-field Molecular Theory', finding:'The local pH inside the polymer gel differs from the bulk solution pH due to the polymer charge distribution. Theory predicts an optimal pH window where the effective charge of glyphosate and the polymer charge maximize their electrostatic attraction.', decision:'Adjust the polymer grafting density to create an optimal internal pH microenvironment, regardless of the external pH of the solution being treated.', scale:'MOLECULAR THEORY', solutionImgs:['imagenes_extraidas_metadatos/2019_Perez_A/img_p3_2.png','imagenes_extraidas_metadatos/2019_Perez_A/img_p4_4.png'] },
+
+  { type:'problem', title:'How to design selectivity against degradation byproducts?', subtitle:'AMPA vs glyphosate in the same polymer matrix', atlas:'Atlas #8', scale:'MOLECULAR THEORY', problemImg:'imagenes_extraidas_metadatos/acs_langmuir_8b02727/img_p0_0.png' },
+  { type:'solution', title:'Ionic Competition: Effective Charge as Selectivity', method:'Transfer free energy', finding:'Glyphosate (with three ionizable groups) displaces AMPA (one ionizable group) from the polymer adsorption sites through effective charge superiority at neutral pH. The transfer free energy calculation quantifies the difference.', decision:'Maximize the adsorbent charge density to exploit the valence difference between glyphosate and AMPA. At high charge density, selectivity for the more charged compound increases exponentially.', scale:'MOLECULAR THEORY', solutionImgs:['imagenes_extraidas_metadatos/acs_langmuir_8b02727/img_p3_3.png','imagenes_extraidas_metadatos/acs_langmuir_8b02727/img_p5_6.png'] },
+
+  { type:'problem', title:'Which architecture maximizes therapeutic protein loading?', subtitle:'Responsive nanogels for encapsulation and controlled release', atlas:'Atlas #5', scale:'MOLECULAR THEORY', problemImg:'imagenes_extraidas_metadatos/2024-PerezChavez-JPCB/img_p0_0.png' },
+  { type:'solution', title:'Core-Shell Charge Gradient', method:'Molecular Theory of nanogels', finding:'A charge density gradient with a highly functionalized core and neutral shell creates an electrostatic potential that attracts the protein toward the interior of the nanogel, away from the potentially denaturing environment. The internal charge simultaneously attracts and protects.', decision:'Design nanogels with a highly functionalized core and low-charge shell. The homogeneous architecture has ~3-fold lower loading than the optimal gradient.', scale:'MOLECULAR THEORY', solutionImgs:['imagenes_extraidas_metadatos/2024-PerezChavez-JPCB/img_p3_3.png','imagenes_extraidas_metadatos/2024-PerezChavez-JPCB/img_p5_6.png'] },
+
+  { type:'problem', title:'What is the salinity window for the colloidal response?', subtitle:'Non-monotonic swelling: the added-salt anomaly', atlas:'Atlas #9', scale:'MOLECULAR THEORY', problemImg:'imagenes_extraidas_metadatos/acs_macromol_0c02885/img_p0_0.png' },
+  { type:'solution', title:'Physiological Trigger: The Added-Salt Anomaly', method:'Thermodynamic Donnan equilibrium theory', finding:'Nanogel collapse/expansion as a function of salinity is non-monotonic: at low salt, osmotic pressure keeps the gel expanded; at physiological salt (~150mM NaCl), charge neutralization induces collapse; at very high salt, the salting-out effect may re-expand it. Theory predicts the swelling minimum.', decision:'Calibrate polymer network density and ionizable group density so that maximum collapse occurs exactly at 150mM NaCl, the physiological concentration of tumor cytoplasm.', scale:'MOLECULAR THEORY', solutionImgs:['imagenes_extraidas_metadatos/acs_macromol_0c02885/img_p4_3.png','imagenes_extraidas_metadatos/acs_macromol_0c02885/img_p6_6.png'] },
+
+
+
+  // CONTINUUM
+  { type:'section', title:'Continuum Level: PNP', subtitle:'Behavior at device scale?', scale:'CONTINUUM' },
+  { type:'glass', title:'Poisson-Nernst-Planck Equations',
+    eq:'\\[ \\nabla \\cdot (D \\nabla c + z \\mu c \\nabla \\phi) = 0 \\]',
+    caption:'Nernst-Planck (mass flux by diffusion and migration) + Poisson (electrostatics).',
+    points:[
+      'Ionic flux has two components: diffusive (∝ ∇c, concentration gradient) and electromigration (∝ c∇φ, electric field).',
+      'The Poisson equation ∇²φ = −ρ_e/ε couples the electric field to the free charge density of the ions.',
+      'The coupled PNP system determines the concentration and potential profiles in the pore at device scale.'
+    ], scale:'CONTINUUM',
+    image:'PNP (TRANSPORT)\nConcept: Nanopore, moving ions, potential gradient, arrows indicating flux.',
+    svg:`<svg viewBox="0 0 300 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;border:1px solid #d0d7e0;border-radius:6px;background:#fff;margin-top:0.5rem;">
+  <text x="150" y="13" font-size="9" font-family="monospace" fill="#6e7a8a" text-anchor="middle" letter-spacing="1">PNP PROFILES ALONG NANOPORE AXIS</text>
+
+  <!-- LEFT panel: concentration profiles -->
+  <text x="72" y="26" font-size="7.5" font-family="monospace" fill="#3b4252" text-anchor="middle">concentration c(z)</text>
+  <line x1="18" y1="30" x2="18" y2="115" stroke="#d0d7e0" stroke-width="1"/>
+  <line x1="18" y1="115" x2="138" y2="115" stroke="#d0d7e0" stroke-width="1"/>
+  <!-- pore walls -->
+  <rect x="18" y="30" width="5" height="85" fill="#e8ecf0"/>
+  <rect x="133" y="30" width="5" height="85" fill="#e8ecf0"/>
+  <!-- cation profile: concentrated on left, depleted inside -->
+  <path d="M23,45 C35,45 45,55 60,68 C75,80 90,85 115,82 C122,80 128,75 133,70" fill="none" stroke="#1a3a5c" stroke-width="2"/>
+  <!-- anion profile: depleted on left, enriched inside (brush is negative) -->
+  <path d="M23,95 C35,95 45,88 60,75 C75,62 90,55 115,58 C122,60 128,65 133,68" fill="none" stroke="#8b2020" stroke-width="2"/>
+  <!-- legend -->
+  <line x1="22" y1="125" x2="38" y2="125" stroke="#1a3a5c" stroke-width="2"/>
+  <text x="40" y="128" font-size="6.5" font-family="monospace" fill="#1a3a5c">c₊ (cations)</text>
+  <line x1="22" y1="136" x2="38" y2="136" stroke="#8b2020" stroke-width="2"/>
+  <text x="40" y="139" font-size="6.5" font-family="monospace" fill="#8b2020">c₋ (anions)</text>
+
+  <!-- divider -->
+  <line x1="150" y1="18" x2="150" y2="148" stroke="#e8ecf0" stroke-width="1" stroke-dasharray="3,3"/>
+
+  <!-- RIGHT panel: potential profile -->
+  <text x="222" y="26" font-size="7.5" font-family="monospace" fill="#3b4252" text-anchor="middle">potential φ(z)</text>
+  <line x1="162" y1="30" x2="162" y2="115" stroke="#d0d7e0" stroke-width="1"/>
+  <line x1="162" y1="115" x2="282" y2="115" stroke="#d0d7e0" stroke-width="1"/>
+  <!-- pore walls -->
+  <rect x="162" y="30" width="5" height="85" fill="#e8ecf0"/>
+  <rect x="277" y="30" width="5" height="85" fill="#e8ecf0"/>
+  <!-- potential: drops steeply near charged brush walls, flat in bulk -->
+  <path d="M167,50 C172,52 178,58 190,65 C205,72 215,75 232,75 C248,75 258,70 270,62 C275,58 278,54 282,50" fill="rgba(26,58,74,0.06)" stroke="#1a3a4a" stroke-width="2"/>
+  <!-- zero line -->
+  <line x1="162" y1="75" x2="282" y2="75" stroke="#d0d7e0" stroke-width="0.8" stroke-dasharray="3,3"/>
+  <text x="159" y="78" font-size="6" font-family="monospace" fill="#94a3b8" text-anchor="end">0</text>
+  <!-- arrows for electromigration flux -->
+  <line x1="190" y1="88" x2="204" y2="88" stroke="#c8a96e" stroke-width="1.3" marker-end="url(#arrpnp)"/>
+  <line x1="220" y1="88" x2="234" y2="88" stroke="#c8a96e" stroke-width="1.3" marker-end="url(#arrpnp)"/>
+  <text x="212" y="100" font-size="6.5" font-family="monospace" fill="#c8a96e" text-anchor="middle">zμc∇φ</text>
+  <!-- Poisson coupling annotation -->
+  <text x="222" y="125" font-size="6.5" font-family="monospace" fill="#3a2a1a" text-anchor="middle">∇²φ = −ρ_e/ε</text>
+  <text x="222" y="136" font-size="6.5" font-family="monospace" fill="#94a3b8" text-anchor="middle">(coupled to c±)</text>
+
+  <defs>
+    <marker id="arrpnp" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+      <path d="M0,0 L0,5 L5,2.5 Z" fill="#c8a96e"/>
+    </marker>
+  </defs>
+</svg>`},
+
+
+  { type:'problem', title:'Which pore geometry maximizes osmotic power?', subtitle:'Blue Energy: harvesting the river-sea salinity gradient', atlas:'Atlas #2', scale:'CONTINUUM' },
+  { type:'solution', title:'Bullet-Shaped Pore: Optimal Geometry', method:'PNP in asymmetric pores', finding:'The bullet-shaped pore triples the extractable osmotic power compared to the cylindrical pore, by drastically reducing the ionic access resistance at the narrow end. The conical pore, an intuitive alternative, has lower performance due to its softer field gradient.', decision:'Fabricate bullet-shaped asymmetric pores for osmotic energy applications. Conical pores are suboptimal; the bullet geometry should be the design standard for this application.', scale:'CONTINUUM', solutionImgs:['imagenes_extraidas_metadatos/1-s2_0-S2211285520301701-main/img_p3_5.png','imagenes_extraidas_metadatos/1-s2_0-S2211285520301701-main/img_p4_6.png'] },
+
+  { type:'problem', title:'How to create a phosphate-sensitive ionic diode?', subtitle:'Nanofluidic switching for high signal-to-noise biosensing', atlas:'Atlas #7', scale:'CONTINUUM', problemImg:'imagenes_extraidas_metadatos/P-rez-Mitta_et_al-2018-Small/img_p2_0.png' },
+  { type:'solution', title:'Rectification Inversion by Phosphates', method:'Coupled PNP + MC', finding:'Phosphate binding to the PAH polymer inverts the surface charge of the nanopore, which in turn inverts the direction of ionic rectification. The PNP model quantitatively predicts the phosphate concentration threshold for switching, validated experimentally.', decision:'Use PAH as the functionalization layer in nanopores for high-SNR phosphate biosensing. The rectification inversion provides a robust binary signal that is easily detectable.', scale:'CONTINUUM', solutionImgs:['imagenes_extraidas_metadatos/P-rez-Mitta_et_al-2018-Small/img_p3_2.png','imagenes_extraidas_metadatos/P-rez-Mitta_et_al-2018-Small/img_p5_4.png'] },
+
+  { type:'problem', title:'How to design a three-stable-state ionic switch?', subtitle:'NIR (non-ideal rectification) via induced nanoprecipitation', atlas:'Atlas #18', scale:'CONTINUUM', problemImg:'imagenes_extraidas_metadatos/Nanoscale/img_p3_0.png' },
+  { type:'solution', title:'Three-Level Iontronic Logic', method:'PNP in non-linear regime', finding:'Nanoprecipitation of a poorly soluble salt inside the pore creates a stable low-conductance state that does not spontaneously reverse: the third state of the switch. PNP predicts that this state requires operating near the solubility limit of the precipitation product.', decision:'Design functionalized asymmetric pores to operate under conditions where the local ionic product concentration is close to the Ksp of the target precipitate. Pore asymmetry is essential to localize the precipitation.', scale:'CONTINUUM', solutionImgs:['imagenes_extraidas_metadatos/Nanoscale/img_p5_2.png','imagenes_extraidas_metadatos/Nanoscale/img_p7_4.png'] },
+
+  { type:'text', title:'Multiscale Integration: The Complete Loop',
+    body:'<strong>DFT → MC → Molecular Theory → PNP</strong>: the flow of information across scales that constitutes rational design of functional materials.',
+    insights:[
+      { label:'The loop', text:'DFT provides interaction energies → MC and Theory calculate isotherms and density profiles → PNP translates those profiles into device currents and selectivities.' },
+      { label:'Cross-validation', text:'Each level can be independently validated experimentally, allowing identification of which scale holds the discrepancies with experiment.' },
+      { label:'Predictive power', text:'Once the loop is calibrated, we can explore thousands of design variants computationally before synthesizing a single material.' }
+    ], scale:'CONTINUUM',
+    image:'FINAL INTEGRATION\nConcept: Vertical workflow: DFT → parameters → MC → adsorption → PNP → device.',
+    svg:`<svg viewBox="0 0 300 190" xmlns="http://www.w3.org/2000/svg" style="width:100%;border:1px solid #d0d7e0;border-radius:6px;background:#fff;">
+  <text x="150" y="14" font-size="9" font-family="monospace" fill="#6e7a8a" text-anchor="middle" letter-spacing="1">THE COMPLETE DESIGN LOOP</text>
+  <!-- DFT -->
+  <rect x="100" y="22" width="100" height="26" rx="4" fill="#e8f0f8" stroke="#1a3a5c" stroke-width="1.5"/>
+  <text x="150" y="33" font-size="9" font-family="monospace" fill="#1a3a5c" text-anchor="middle" font-weight="bold">DFT</text>
+  <text x="150" y="43" font-size="7" font-family="monospace" fill="#1a3a5c" text-anchor="middle">geometry · charges · ε,σ</text>
+  <!-- arrow -->
+  <line x1="150" y1="48" x2="150" y2="60" stroke="#c8a96e" stroke-width="1.5" marker-end="url(#arrl)"/>
+  <text x="155" y="56" font-size="7" font-family="monospace" fill="#c8a96e">ε, σ, q</text>
+  <!-- MC -->
+  <rect x="100" y="60" width="100" height="26" rx="4" fill="#e8f4ec" stroke="#1a4a2e" stroke-width="1.5"/>
+  <text x="150" y="71" font-size="9" font-family="monospace" fill="#1a4a2e" text-anchor="middle" font-weight="bold">Monte Carlo (GCMC)</text>
+  <text x="150" y="81" font-size="7" font-family="monospace" fill="#1a4a2e" text-anchor="middle">isotherm · selectivity · ρ_mol(r)</text>
+  <!-- arrow -->
+  <line x1="150" y1="86" x2="150" y2="98" stroke="#c8a96e" stroke-width="1.5" marker-end="url(#arrl)"/>
+  <text x="155" y="94" font-size="7" font-family="monospace" fill="#c8a96e">isotherm</text>
+  <!-- Molecular Theory -->
+  <rect x="85" y="98" width="130" height="26" rx="4" fill="#e8f4f8" stroke="#1a3a4a" stroke-width="1.5"/>
+  <text x="150" y="109" font-size="9" font-family="monospace" fill="#1a3a4a" text-anchor="middle" font-weight="bold">Molecular Theory</text>
+  <text x="150" y="119" font-size="7" font-family="monospace" fill="#1a3a4a" text-anchor="middle">ρ(r) · charge profile · pH response</text>
+  <!-- arrow -->
+  <line x1="150" y1="124" x2="150" y2="136" stroke="#c8a96e" stroke-width="1.5" marker-end="url(#arrl)"/>
+  <text x="155" y="132" font-size="7" font-family="monospace" fill="#c8a96e">ρ_charge(r)</text>
+  <!-- PNP -->
+  <rect x="100" y="136" width="100" height="26" rx="4" fill="#f8f5e8" stroke="#3a2a1a" stroke-width="1.5"/>
+  <text x="150" y="147" font-size="9" font-family="monospace" fill="#3a2a1a" text-anchor="middle" font-weight="bold">PNP</text>
+  <text x="150" y="157" font-size="7" font-family="monospace" fill="#3a2a1a" text-anchor="middle">I–V curve · rectification · selectivity</text>
+
+  <!-- left: experiment validates each level -->
+  <text x="48" y="35" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">spectroscopy</text>
+  <text x="48" y="44" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">crystallography</text>
+  <line x1="100" y1="35" x2="70" y2="35" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="3,2"/>
+
+  <text x="48" y="73" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">volumetry</text>
+  <text x="48" y="82" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">gravimetry</text>
+  <line x1="100" y1="73" x2="70" y2="73" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="3,2"/>
+
+  <text x="48" y="111" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">swelling</text>
+  <text x="48" y="120" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">titration</text>
+  <line x1="85" y1="111" x2="70" y2="111" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="3,2"/>
+
+  <text x="48" y="149" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">electrochem</text>
+  <text x="48" y="158" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">I–V expt.</text>
+  <line x1="100" y1="149" x2="70" y2="149" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="3,2"/>
+
+  <text x="48" y="175" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">← experiment</text>
+  <text x="48" y="184" font-size="7" font-family="monospace" fill="#94a3b8" text-anchor="middle">validates each level</text>
+
+  <defs>
+    <marker id="arrl" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+      <path d="M0,0 L0,5 L5,2.5 Z" fill="#c8a96e"/>
+    </marker>
+  </defs>
+</svg>`},
+
+  // FINAL
+  { type:'text', title:'Philosophy',
+    body:'Each method answers a <strong>different question</strong>. Together, they design.',
+    insights:[
+      { label:'Question first', text:'Before choosing a method, ask what you want to know. Incorrect choice of theory level can give the "right" answer to the wrong question.' },
+      { label:'The dialogue between scales', text:'Methods are not independent: parameters flow upward and design questions flow downward. Coherence between levels is the quality guarantee.' }
+    ], scale:'CLOSING' },
+  { type:'text', title:'Impact',
+    body:'<strong>Rational Design · Prediction · Industrial Efficiency.</strong>',
+    insights:[
+      { label:'Rational design', text:'Replaces experimental trial-and-error with guided prediction. New material development times are reduced from decades to years.' },
+      { label:'Sustainability', text:'CO₂ capture materials, water purification membranes, precision drug delivery: all with lower experimental cost and higher success rate.' }
+    ], scale:'CLOSING' },
+  { type:'text', title:'Future',
+    body:'<strong>Coupled multiscale + physics-based AI.</strong>',
+    insights:[
+      { label:'The next step', text:'Machine learning models trained on multiscale simulation data can replace costly quantum-level calculations in large-scale materials searches.' },
+      { label:'Physics-informed ML', text:'Neural networks that respect conservation laws and physical symmetries of the system. AI does not replace physics: it accelerates it.' }
+    ], scale:'CLOSING' },
+  { type:'final', title:'The Power of Integration', contact:'albesa@inifta.unlp.edu.ar · INIFTA · CONICET · UNLP', scale:'CLOSING' }
+];
+
+let current = 0;
+const deck = document.getElementById('deck');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+
+function imgPlaceholder(img, svg) {
+  if (svg) return `<div style="margin-top:1rem;">${svg}</div>`;
+  if (!img) return '';
+  const lines = img.split('\n');
+  const title = lines[0] || '';
+  const desc = lines.slice(1).join(' ');
+  return `<div class="img-placeholder"><div class="img-title">${title}</div><p class="img-desc">${desc}</p></div>`;
+}
+
+function buildSlide(s, idx) {
+  const sec = document.createElement('section');
+  sec.className = 'slide';
+  const levelKey = (s.scale || '').replace('NIVEL ', '').split(' ')[0];
+  const stripeColor = LEVEL_COLORS[s.scale] || '#94a3b8';
+
+  let headerLeft = `<span class="level-tag">${s.scale || ''}</span>`;
+  let headerRight = '';
+  if (s.atlas) headerRight = `<span class="atlas-tag">${s.atlas}</span>`;
+
+  const header = `<header class="slide-header">${headerLeft}<div class="header-right">${headerRight}</div></header>`;
+  const footer = `<footer class="slide-footer">
+    <span class="attribution">Albesa · INIFTA-CONICET-UNLP</span>
+    <div class="progress-track"><div class="progress-fill" id="fill-${idx}" style="width:${((idx+1)/slideData.length)*100}%"></div></div>
+    <span class="slide-num">${String(idx+1).padStart(2,'0')} / ${slideData.length}</span>
+  </footer>`;
+
+  let body = '';
+
+  if (s.type === 'title') {
+    body = `<div class="slide-body"><div class="slide-title-wrap">
+      <div class="eyebrow">INIFTA · CONICET · UNLP</div>
+      <h1>${s.title}</h1>
+      <div class="title-rule"></div>
+      <p class="sub">${s.subtitle}</p>
+    </div></div>`;
+
+  } else if (s.type === 'section') {
+    body = `<div class="slide-body section-wrap">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:${stripeColor};"></div>
+      <div class="level-label">${s.scale}</div>
+      <h2>${s.title}</h2>
+      <p class="section-q">${s.subtitle}</p>
+    </div>`;
+
+  } else if (s.type === 'text') {
+    const insights = s.insights || [];
+    const insightHTML = insights.map(i => `<div class="insight-box"><div class="insight-label">${i.label}</div><p>${i.text}</p></div>`).join('');
+    const imgHTML = (s.image || s.svg) ? imgPlaceholder(s.image, s.svg) : '';
+    const hasRight = insights.length > 0 || imgHTML;
+    body = `<div class="slide-body">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:${stripeColor};"></div>
+      <div class="text-wrap${hasRight ? '' : ' single'}">
+        <div class="text-left">
+          <h3>${s.title}</h3>
+          <p class="body-text">${s.body || s.content || ''}</p>
+        </div>
+        ${hasRight ? `<div class="text-right">${insightHTML}${imgHTML}</div>` : ''}
+      </div>
+    </div>`;
+
+  } else if (s.type === 'glass') {
+    const points = s.points || [];
+    const ptHTML = points.map(p => `<div class="eq-point"><div class="dot"></div><p>${p}</p></div>`).join('');
+    const imgHTML = (s.image || s.svg) ? imgPlaceholder(s.image, s.svg) : '';
+    body = `<div class="slide-body" style="justify-content:flex-start;padding-top:1.5rem;">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:${stripeColor};"></div>
+      <div class="eq-wrap">
+        <div class="eq-left">
+          <h3>${s.title}</h3>
+          <div class="eq-box">${s.eq || s.content || ''}</div>
+          <p class="eq-caption">${s.caption || s.subtitle || ''}</p>
+          ${imgHTML}
+        </div>
+        <div class="eq-right">${ptHTML}</div>
+      </div>
+    </div>`;
+
+  } else if (s.type === 'problem') {
+    if (s.problemImg) {
+      body = `<div class="slide-body">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:#8b2020;"></div>
+        <div class="problem-wrap-with-img">
+          <div class="problem-text">
+            <div class="problem-eyebrow"><span class="problem-badge">Design challenge</span>${s.atlas ? `<span class="problem-badge" style="color:var(--accent);border-color:var(--accent)">${s.atlas}</span>` : ''}</div>
+            <h3>${s.title}</h3>
+            <div class="problem-context">${s.subtitle}</div>
+          </div>
+          <div class="paper-img-container">
+            <img class="paper-img" src="${s.problemImg}" alt="Structure under evaluation" loading="lazy"/>
+            <span class="paper-img-caption">Structure under evaluation</span>
+          </div>
+        </div>
+      </div>`;
+    } else {
+      body = `<div class="slide-body">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:#8b2020;"></div>
+        <div class="problem-wrap">
+          <div class="problem-eyebrow"><span class="problem-badge">Design challenge</span>${s.atlas ? `<span class="problem-badge" style="color:var(--accent);border-color:var(--accent)">${s.atlas}</span>` : ''}</div>
+          <h3>${s.title}</h3>
+          <div class="problem-context">${s.subtitle}</div>
+        </div>
+      </div>`;
+    }
+
+  } else if (s.type === 'solution') {
+    const solImgsHTML = s.solutionImgs ? `<div class="solution-images">${s.solutionImgs.map(src => `<img src="${src}" alt="Evidence" loading="lazy"/>`).join('')}</div>` : '';
+    if (s.solutionImgs) {
+      body = `<div class="slide-body" style="justify-content:flex-start;padding-top:2rem;">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:#1a4a2e;"></div>
+        <div class="solution-wrap-3col">
+          <div class="solution-left">
+            <h3>${s.title}</h3>
+            <span class="method-tag">${s.method || s.subtitle || ''}</span>
+            <p class="finding">${s.finding || s.content || ''}</p>
+          </div>
+          <div class="decision-card">
+            <div class="dec-label">Design decision</div>
+            <p class="dec-text">${s.decision}</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.75rem;">
+            ${s.solutionImgs.map(src => `<img class="paper-img" src="${src}" alt="Evidence" loading="lazy"/>`).join('')}
+          </div>
+        </div>
+      </div>`;
+    } else {
+      body = `<div class="slide-body">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:#1a4a2e;"></div>
+        <div class="solution-wrap">
+          <div class="solution-left">
+            <h3>${s.title}</h3>
+            <span class="method-tag">${s.method || s.subtitle || ''}</span>
+            <p class="finding">${s.finding || s.content || ''}</p>
+          </div>
+          <div class="decision-card">
+            <div class="dec-label">Design decision</div>
+            <p class="dec-text">${s.decision}</p>
+          </div>
+        </div>
+      </div>`;
+    }
+
+  } else if (s.type === 'table') {
+    const rows = s.rows || [];
+    const headers = s.headers || ['Model', 'Type', 'Description and features', 'When to use it'];
+    const rowsHTML = rows.map(r => `<tr>
+      <td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td>
+    </tr>`).join('');
+    body = `<div class="slide-body" style="justify-content:flex-start;padding-top:2rem;">
+      <div class="table-wrap">
+        <h3>${s.title}</h3>
+        <table class="methods-table">
+          <thead><tr><th>${headers[0]}</th><th>${headers[1]}</th><th>${headers[2]}</th><th>${headers[3]}</th></tr></thead>
+          <tbody>${rowsHTML}</tbody>
+        </table>
+      </div>
+    </div>`;
+
+
+  } else if (s.type === 'final') {
+    body = `<div class="slide-body final-wrap">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:${stripeColor};"></div>
+      <h1>${s.title}</h1>
+      <div class="title-rule"></div>
+      <p class="contact">${s.contact}</p>
+    </div>`;
+  }
+
+  sec.innerHTML = header + body + footer;
+  return sec;
+}
+
+function render() {
+  deck.innerHTML = '';
+  slideData.forEach((s, i) => deck.appendChild(buildSlide(s, i)));
+  go(0);
+}
+
+function go(n) {
+  current = Math.max(0, Math.min(slideData.length - 1, n));
+  deck.style.transform = `translateX(-${current * 100}vw)`;
+  prevBtn.style.opacity = current === 0 ? '0.3' : '1';
+  nextBtn.style.opacity = current === slideData.length - 1 ? '0.3' : '1';
+  if (window.MathJax) MathJax.typesetPromise();
+}
+
+window.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') go(current + 1);
+  if (e.key === 'ArrowLeft') go(current - 1);
+});
+prevBtn.addEventListener('click', () => go(current - 1));
+nextBtn.addEventListener('click', () => go(current + 1));
+
+render();
+</script>
+</body>
+</html>

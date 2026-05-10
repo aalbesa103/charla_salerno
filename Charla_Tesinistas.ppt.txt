@@ -1,0 +1,133 @@
+Búsqueda computacional de nuevos materiales para la eliminación de sustancias peligrosas
+
+Alberto Gustavo Albesaalbesa@inifta.unlp.edu.ar
+
+(Simulaciones Monte Carlo y otras técnicas aplicadas al estudio de fenómenos superficiales)
+
+¿Sustancias peligrosas? 
+
+Gases de efecto invernaderoPesticidasCompuestos orgánicos volátiles
+
+Adsorción 
+
+Fenómeno de superficieAumento en la concentración de una determinada especie sobre una interfase
+
+Usos de la adsorción
+
+Eliminación de contaminantesAlmacenamiento de gases de alta energía (ej. hidrógeno, metano)Separación de gases (ej.: nitrógeno y oxígeno; dióxido de nitrógeno y metano)
+
+¿Qué es lo que pretendemos entonces?
+
+Entender los procesos fisicoquímicos que ocurren en la cercanía de una superficieEntender cuáles son los factores que influyen en ese procesoModificar la estructura de la superficie (los adsorbentes) para optimizar los procesos
+
+Simulaciones Monte Carlo 
+
+Estudiar los fenómenos a nivel atómico y molecularObtener información macroscópica a través de la observación de los fenómenos microscópicos
+
+Estructuras de Carbón	
+
+GrafitoCarbones activadosNanotubosNanocuernos (Nanohorns)
+
+Resolver mecanismos
+
+¿Dónde se adsorben las moléculas en  los nanotubos de C?
+
+Sitios de adsorción
+
+(a) Minimum of binding energy profiles along the tube (If E ≥ 0, then we set E = 0), for opened end tubes of diameter 9.49 A (7,7) SWNT; in kJ/mol and arbitrary axes units; (b) corresponding isotherm at 83, 93, and 113 K; (c) isosteric heat of adsorption; (d) upper view of filling evolution corresponding to isotherm at 113 K and pressures of 0.062, 5.0, and 56.3 KPa.
+
+Published in: Alberto G. Albesa; Edgardo A. Fertitta; José L. Vicente; Langmuir  2010, 26, 786-795.DOI: 10.1021/la902192aCopyright © 2009 American Chemical Society
+
+(a) Minimum of binding energy profiles along the tube (if E ≥ 0, then we set E = 0), for opened end tubes of diameter 16.28 A (12,12) SWNT; in kJ/mol and arbitrary axes units; (b) corresponding isotherm at 83, 93, and 113 K; (c) isosteric heat of adsorption; upper view of filling evolution corresponding to isotherm at 113 K and pressures of (d) 0.00138, 0.00627, 0.0563 KPa; 0.563, 5.63, 25.0, and 56.3 KPa.
+
+Published in: Alberto G. Albesa; Edgardo A. Fertitta; José L. Vicente; Langmuir  2010, 26, 786-795.DOI: 10.1021/la902192aCopyright © 2009 American Chemical Society
+
+(a) Minimum of binding energy profiles along the tube (if E ≥ 0, then we set E = 0), for opened end tubes of diameter 20.34 A (15,15) SWNT; in kJ/mol and arbitrary axes units; (b) corresponding isotherm at 83, 93, and 113 K; (c) isosteric heat of adsorption; upper view of filling evolution corresponding to isotherm at 113 K and pressures of (d) 0.0000133, 0.00509, 0.0226 KPa; (e) 0.0509, 0.226, 0.509 KPa; (f) 2.26, 5.09, 22.6, and 45.2 KPa.
+
+Published in: Alberto G. Albesa; Edgardo A. Fertitta; José L. Vicente; Langmuir  2010, 26, 786-795.DOI: 10.1021/la902192aCopyright © 2009 American Chemical Society
+
+Sistemas experimentalmente complicados
+
+Mezclas gaseosasSustratos complejos
+
+Etano/Etileno sobre nanotubos
+
+*
+
+Simulated adsorption isotherms at 153 K for ethylene (dotted line), ethane (solid line), and the equimolar mixture (dashed line) for homogeneous (upper panels) and heterogeneous (lower panels) nanotube bundles.
+
+Published in: Alberto G. Albesa; Matías Rafti; Dinesh S. Rawat; José Luis Vicente; Aldo D. Migone; Langmuir  2012, 28, 1824-1832.DOI: 10.1021/la204314aCopyright © 2011 American Chemical Society
+
+Importante incorporar heterogeneidades para que coincidan los resultados experimentalesLa mayor separación se logra en el interior de los nanotubos
+
+Metano/Dióxido de Carbono sobre carbones activados
+
+Published in: Alberto G. Albesa et al./Adsorption Science & Technology Vol. 30 No. 8/9 2012.DOI: 10.1260/0263-6174.30.8-9.669Copyright © 2013 Multi Science Publishing
+
+Structures for the simulated carbons. (a) C-24-1; (b) C-54-1; (c) C-96-1; (d) C-150-1.
+
+Isotermas
+
+Relación entre los calores isostéricos y la selectividadLa selectividad cambia con las estructuras de los CA
+
+Published in: Alberto G. Albesa et al./Adsorption Science & Technology Vol. 30 No. 8/9 2012.DOI: 10.1260/0263-6174.30.8-9.669Copyright © 2013 Multi Science Publishing
+
+Polímeros con respuesta
+
+Sistemas en solución
+
+Published in: Alberto G. Albesa & Matías Rafti & José L. Vicente./J Mol Model (2013) 19:2183–2188.DOI: 10.1007/s00894-013-1761-8Copyright © Springer-Verlag Berlin Heidelberg 2013
+
+Cambios en el pKa
+
+El aumento de la carga del catión favorece la desprotonación del monómero
+
+Perfiles de densidad de cationes en sal monovalente
+
+Albesa, A. G., Rafti, M., & Vicente, J. L. (2013). Trivalent cations switch the selectivity in nanopores. Journal of molecular modeling, 19(6), 2183-2188.
+
+Perfiles de densidad de cationes en sal divalente
+
+Albesa, A. G., Rafti, M., & Vicente, J. L. (2013). Trivalent cations switch the selectivity in nanopores. Journal of molecular modeling, 19(6), 2183-2188.
+
+Perfiles de densidad de cationes en sal trivalente
+
+Albesa, A. G., Rafti, M., & Vicente, J. L. (2013). Trivalent cations switch the selectivity in nanopores. Journal of molecular modeling, 19(6), 2183-2188.
+
+El mecanismo de selectividad de aniones es principalmente una consecuencia del apantallamiento de las cargas por cationesLas sales producen desplazamiento de los equilibrios ácido-base como consecuencia del confinamiento
+
+(a) Scheme showing the modification of the nanochannel with PAH and the ionizable groups in the surface. (b) Experimental curves of the modified nanochannel under different pH conditions (c). Theoretical curves of the modified nanochannel at different surface charges.
+
+Published in: Gonzalo Pérez-Mitta; Alberto Albesa; Facundo M. Gilles; María Eugenia Toimil-Molares; Christina Trautmann; Omar Azzaroni; J. Phys. Chem. C  2017, 121, 9070-9076.DOI: 10.1021/acs.jpcc.7b01639Copyright © 2017 American Chemical Society
+
+Rectification factor as a function of pH. Surface charge density versus pH as derived from the fitting of the experimental I–V curves using the PNP formalism, (MC simulations, and (iii) the fitting between experimental and PNP I–V curves.  Protonation degree vs pH obtained from MC simulations.
+
+Published in: Gonzalo Pérez-Mitta; Alberto Albesa; Facundo M. Gilles; María Eugenia Toimil-Molares; Christina Trautmann; Omar Azzaroni; J. Phys. Chem. C  2017, 121, 9070-9076.DOI: 10.1021/acs.jpcc.7b01639Copyright © 2017 American Chemical Society
+
+Stimuli Responsive Hydrogels
+
+Gupta et al., Drug Discovery Today 7:569, 2002
+
+hydrogel responsive to:pHsalt concentrationtemperatureconcentration of biomoleculesapplied electric potential
+
+Controlled release of drugs/pesticideScaffolds for tissue engineeringBiosensors (biomolecule sensitive gels)Contact lensesWound dressingSuper-adsorbent materials (diapers!)Food industryIntelligent surfacesMicro-actuators
+
+Stimuli Responsive Hydrogels
+
+Molecular Theory: pH-Responsive Gels
+
+molecular level descriptionexplicit acid-base equilibrium
+
+polymer networkadsorbate (peptides, proteins)
+
+email: longogs@gmail.com
+
+Adsorción de glifosato en nanogeles
+
+Trabajo actual
+
+Simulación de Nanotubos activados químicamente (es decir que poseen grupos funcionales)Separación de gases de interés industrialEstudio de la respuesta de polímeros dentro de poros con distintas geometríasAdsorción de pesticidas Materiales organometálicosSustancias carbonosasMateriales poliméricos con respuesta a estímulos
+
+Llamados a becas para estudiantes
+
+Beca entrenamiento CIC :Presentación :AGOSTO/del 15 al 26Becas de Estímulo a las Vocaciones Científicas (Becas EVC – CIN)Presentación :AGOSTO/del 1 al 25Contacto:longogs@gmail.comalberto.albesa@gmail.com
