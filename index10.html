@@ -654,7 +654,7 @@ const LEVEL_COLORS = {
   'CLOSING': '#c8a96e'
 };
 
-const slideData = [{ type:'title', title:'Computational Methods for the Design of Adsorptive and Separation Materials', subtitle:'From Molecular Simulations to Continuum Models', scale:'FOUNDATION' },
+const slideData = [{ type:'title', title:'Computational Methods for the Design of Adsorptive and Separation Materials', subtitle:'From Molecular Simulations to Continuum Models', author:'Alberto G. Albesa', scale:'FOUNDATION' },
   { type:'glass', title:'The Scale Problem', eq:'\\[ \\hat{H}\\Psi = E\\Psi \\]', caption:'The exact quantum mechanics of a system (Schrödinger equation) vs. a macroscopic device.', points:['Solving the exact Schrödinger equation scales exponentially with the number of electrons. A 100-atom system is intractable.', 'A functional nanopore contains millions of atoms interacting simultaneously.', 'Direct calculation is impossible. The solution requires a hierarchical strategy where each level sacrifices detail to gain scale.'], scale:'FOUNDATION', svg:`<svg viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;border:1px solid #d0d7e0;border-radius:6px;background:#fff;padding:4px;">
   <text x="10" y="14" font-size="9" font-family="monospace" fill="#6e7a8a" letter-spacing="1">COMPUTATIONAL COST vs SYSTEM SIZE</text>
   <!-- axes -->
@@ -786,6 +786,7 @@ const slideData = [{ type:'title', title:'Computational Methods for the Design o
   <rect x="90" y="108" width="120" height="18" rx="3" fill="#f7f5f0" stroke="#d0d7e0" stroke-width="1"/>
   <text x="150" y="120" font-size="7.5" font-family="monospace" fill="#6e7a8a" text-anchor="middle">μ, p, Cp, χ, κ, ...</text>
 </svg>`},
+  { type:'solution', title:'Application: Conformer Distribution from Z', method:'DFT (B3LYP/6-311++G(2d,2p)) + Boltzmann Statistics + SMD Solvent', finding:'If we compute the energy of every accessible conformer of glyphosate via DFT, we can use the partition function Z = \u03a3 e\u207b\u1d5d\u1d31\u1d62 to calculate the Boltzmann population of each species. The distribution changes dramatically with the solvent: water stabilizes zwitterionic forms, while DMSO and vacuum favor neutral conformers.', decision:'Statistical thermodynamics bridges single-molecule DFT energies to observable conformer populations. The solvent model (SMD) is critical \u2014 vacuum calculations give qualitatively wrong distributions.', scale:'BRIDGE', solutionImgs:['imagenes_extraidas_metadatos/1-s2_0-S2667022422000780-main__1_/img_p3_6.png','imagenes_extraidas_metadatos/1-s2_0-S2667022422000780-main__1_/img_p4_7.png','imagenes_extraidas_metadatos/1-s2_0-S2667022422000780-main__1_/img_p4_8.png','imagenes_extraidas_metadatos/1-s2_0-S2667022422000780-main__1_/img_p4_9.png'] },
   { type:'glass', title:'The Grand Canonical Partition Function',
     eq:'\\[ \\Xi = \\sum_{N=0}^{\\infty}\\sum_i e^{-\\beta(E_i - \\mu N)} \\qquad \\Omega = -k_{\\mathrm{B}}T\\ln\\Xi \\]',
     caption:'Ξ generalizes Z to open systems where N fluctuates. The chemical potential μ controls particle exchange with the reservoir. For an ideal gas in contact with a pore, fixing the gas pressure P fixes μ, which fixes the simulation conditions exactly.',
@@ -1130,46 +1131,12 @@ const slideData = [{ type:'title', title:'Computational Methods for the Design o
   <rect x="160" y="86" width="120" height="18" rx="3" fill="#f8f0e8" stroke="#4a2a1a" stroke-width="0.8"/>
   <text x="220" y="98" font-size="7.5" font-family="monospace" fill="#4a2a1a" text-anchor="middle">→ use Coarse-Grain beyond μs</text>
 </svg>` },
-  { type:'text', title:'Molecular Theory (Classical DFT)', body:'<strong>Not classical (electronic) DFT.</strong> A technique that explicitly accounts for the <strong>size and charges of all molecular components</strong> in the system.', insights:[{label:'The Advantage', text:'Integrates size and charge effects into a free energy functional. Replaces stochastic sampling with deterministic minimization.'}, {label:'The Bridge', text:'Ideal for studying collective responses, like the protonation state of polymer networks under varying salinity.'}], scale:'THEORY' },
+  { type:'text', title:'Molecular Theory', body:'<strong>Not classical (electronic) DFT.</strong> A technique that explicitly accounts for the <strong>size and charges of all molecular components</strong> in the system.', insights:[{label:'The Advantage', text:'Integrates size and charge effects into a free energy functional. Replaces stochastic sampling with deterministic minimization.'}, {label:'The Bridge', text:'Ideal for studying collective responses, like the protonation state of polymer networks under varying salinity.'}], scale:'THEORY' },
   { type:'solution', title:'Nanogels: Charge Regulation', method:'Molecular Theory of responsive polymers', finding:'The local pH inside a polymer gel differs from the bulk solution due to the internal charge distribution. The theory calculates the exact protonation state based on the local electrostatic potential.', decision:'Design the internal microenvironment of the nanogel to maximize electrostatic attraction for the target drug or agrochemical, creating an optimal local pH regardless of the external bulk solution.', scale:'THEORY', solutionImgs:['imagenes_extraidas_metadatos/2019_Perez_A/img_p3_2.png','imagenes_extraidas_metadatos/2019_Perez_A/img_p4_4.png'] },
-  { type:'glass', title:'Continuum Scale: PNP', eq:'\\[ \\nabla \\cdot (D \\nabla c + z \\mu c \\nabla \\phi) = 0 \\]', caption:'Poisson-Nernst-Planck Equations calculate macroscopic currents.', points:['The final jump in scale: from discrete particles to continuous concentrations.', 'Nernst-Planck defines mass flux by diffusion and electromigration.', 'Poisson couples the electric field to the free charge density of the ions.', 'Translates nanoscale charge distributions into device-level I-V curves.'], scale:'CONTINUUM', svg:`<svg viewBox="0 0 300 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;border:1px solid #d0d7e0;border-radius:6px;background:#fff;margin-top:0.5rem;">
-  <text x="150" y="13" font-size="9" font-family="monospace" fill="#6e7a8a" text-anchor="middle" letter-spacing="1">PNP PROFILES ALONG NANOPORE AXIS</text>
-  <text x="72" y="26" font-size="7.5" font-family="monospace" fill="#3b4252" text-anchor="middle">concentration c(z)</text>
-  <line x1="18" y1="30" x2="18" y2="115" stroke="#d0d7e0" stroke-width="1"/>
-  <line x1="18" y1="115" x2="138" y2="115" stroke="#d0d7e0" stroke-width="1"/>
-  <rect x="18" y="30" width="5" height="85" fill="#e8ecf0"/>
-  <rect x="133" y="30" width="5" height="85" fill="#e8ecf0"/>
-  <path d="M23,45 C35,45 45,55 60,68 C75,80 90,85 115,82 C122,80 128,75 133,70" fill="none" stroke="#1a3a5c" stroke-width="2"/>
-  <path d="M23,95 C35,95 45,88 60,75 C75,62 90,55 115,58 C122,60 128,65 133,68" fill="none" stroke="#8b2020" stroke-width="2"/>
-  <line x1="22" y1="125" x2="38" y2="125" stroke="#1a3a5c" stroke-width="2"/>
-  <text x="40" y="128" font-size="6.5" font-family="monospace" fill="#1a3a5c">c₊ (cations)</text>
-  <line x1="22" y1="136" x2="38" y2="136" stroke="#8b2020" stroke-width="2"/>
-  <text x="40" y="139" font-size="6.5" font-family="monospace" fill="#8b2020">c₋ (anions)</text>
-  <line x1="150" y1="18" x2="150" y2="148" stroke="#e8ecf0" stroke-width="1" stroke-dasharray="3,3"/>
-  <text x="222" y="26" font-size="7.5" font-family="monospace" fill="#3b4252" text-anchor="middle">potential φ(z)</text>
-  <line x1="162" y1="30" x2="162" y2="115" stroke="#d0d7e0" stroke-width="1"/>
-  <line x1="162" y1="115" x2="282" y2="115" stroke="#d0d7e0" stroke-width="1"/>
-  <rect x="162" y="30" width="5" height="85" fill="#e8ecf0"/>
-  <rect x="277" y="30" width="5" height="85" fill="#e8ecf0"/>
-  <path d="M167,50 C172,52 178,58 190,65 C205,72 215,75 232,75 C248,75 258,70 270,62 C275,58 278,54 282,50" fill="rgba(26,58,74,0.06)" stroke="#1a3a4a" stroke-width="2"/>
-  <line x1="162" y1="75" x2="282" y2="75" stroke="#d0d7e0" stroke-width="0.8" stroke-dasharray="3,3"/>
-  <text x="159" y="78" font-size="6" font-family="monospace" fill="#94a3b8" text-anchor="end">0</text>
-  <line x1="190" y1="88" x2="204" y2="88" stroke="#c8a96e" stroke-width="1.3" marker-end="url(#arrpnp)"/>
-  <line x1="220" y1="88" x2="234" y2="88" stroke="#c8a96e" stroke-width="1.3" marker-end="url(#arrpnp)"/>
-  <text x="212" y="100" font-size="6.5" font-family="monospace" fill="#c8a96e" text-anchor="middle">zμc∇φ</text>
-  <text x="222" y="125" font-size="6.5" font-family="monospace" fill="#3a2a1a" text-anchor="middle">∇²φ = −ρ_e/ε</text>
-  <text x="222" y="136" font-size="6.5" font-family="monospace" fill="#94a3b8" text-anchor="middle">(coupled to c±)</text>
-  <defs>
-    <marker id="arrpnp" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
-      <path d="M0,0 L0,5 L5,2.5 Z" fill="#c8a96e"/>
-    </marker>
-  </defs>
-</svg>` },
-  { type:'solution', title:'The Design Loop: Phosphate Sensor', method:'Coupled MC + PNP Theory', finding:'Phosphate binding inverts the nanopore surface charge, reversing ionic rectification. Monte Carlo calculates the exact surface charge density under nanoconfinement. These charges are fed into the continuum PNP equations to predict the macroscopic I-V curves.', decision:'Explicitly link molecular-level charge regulation (MC) to device-level sensing (PNP) to rationally predict biosensor signals without trial-and-error.', scale:'CONTINUUM', solutionImgs:['imagenes_extraidas_metadatos/P-rez-Mitta_et_al-2018-Small/img_p3_2.png','imagenes_extraidas_metadatos/P-rez-Mitta_et_al-2018-Small/img_p5_4.png','IV_fosfatos.png','imagenes_extraidas_metadatos/P-rez-Mitta_et_al-2018-Small/img_p6_5.png'] },
-  { type:'problem', title:'PNP in Cylindrical Pores', subtitle:'Ion transport in restricted geometries with varying surface charge density.', atlas:'Neptune et al.', scale:'CONTINUUM', problemImg:'imagenes_extraidas_metadatos/neptune/img_p2_2.png' },
-  { type:'solution', title:'Current Rectification in Nanopores', method:'PNP / Finite Element Method', finding:'Symmetric pores with asymmetric charge distribution (or vice versa) act as ionic diodes. The PNP model accurately predicts the rectification ratio based on the pore geometry and electrolyte concentration.', decision:'Optimize pore shape and surface functionalization to create high-performance ionic transistors and diodes.', scale:'CONTINUUM', solutionImgs:['imagenes_extraidas_metadatos/neptune/img_p3_3.png'] },
+  { type:'glass', title:'Continuum Scale: PNP', eq:'\\[ \\vec{J}_i = -D_i\\left(\\nabla c_i + z_i c_i \\nabla \\phi\\right) \\qquad \\nabla^2\\phi = -\\frac{F^2}{\\varepsilon RT}\\sum_i z_i c_i \\qquad \\nabla \\cdot \\vec{J}_i = 0 \\]', caption:'The Nernst–Planck flux equation, the Poisson equation, and the continuity equation form the coupled PNP system. J⃗ᵢ is the ionic flux, Dᵢ the diffusion coefficient, zᵢ the ion charge, and ε the solution permittivity inside the channel.', points:['The final jump in scale: from discrete particles to continuous concentrations.', 'Nernst–Planck defines the ionic flux by diffusion and electromigration: J⃗ᵢ = −Dᵢ(∇cᵢ + zᵢcᵢ∇φ).', 'Poisson couples the electric field to the free charge density: ∇²φ = −(F²/εRT)Σzᵢcᵢ.', 'The continuity equation ∇·J⃗ᵢ = 0 ensures mass conservation at steady state.', 'Together they translate nanoscale charge distributions into device-level I-V curves.'], scale:'CONTINUUM', glassImg:'imagenes_extraidas_metadatos/acs_2Ejpcc_2E7b01639/img_p0_0.png' },
+  { type:'solution', title:'The Design Loop: Phosphate Sensor', method:'Coupled MC + PNP Theory', finding:'Phosphate binding inverts the nanopore surface charge, reversing ionic rectification. Monte Carlo calculates the exact surface charge density under nanoconfinement. These charges are fed into the continuum PNP equations to predict the macroscopic I-V curves.', decision:'Explicitly link molecular-level charge regulation (MC) to device-level sensing (PNP) to rationally predict biosensor signals without trial-and-error.', scale:'CONTINUUM', findingImg:'imagenes_extraidas_metadatos/P-rez-Mitta_et_al-2018-Small/img_p6_5.png', decisionImg:'IV_fosfatos.png', solutionImgs:['imagenes_extraidas_metadatos/P-rez-Mitta_et_al-2018-Small/img_p3_2.png','imagenes_extraidas_metadatos/P-rez-Mitta_et_al-2018-Small/img_p5_4.png'] },
   { type:'text', title:'Impact of Rational Design', body:'<strong>Rational Design · Prediction · Industrial Efficiency.</strong>', insights:[{label:'Substitution of Trial-and-Error', text:'Replaces blind experimental screening with guided prediction. Development times drop from decades to years.'}, {label:'Sustainability', text:'Optimization of CO₂ capture materials, water purification membranes, and precision drug delivery with a higher success rate and lower experimental cost.'}], scale:'CLOSING' },
-  { type:'final', title:'The Power of Integration', contact:'The complexity of the model must match the complexity of the system. Precision only makes sense after defining the observable and its scale.\nalbesa@inifta.unlp.edu.ar · INIFTA · CONICET · UNLP', scale:'CLOSING' }];
+  { type:'final', title:'Thank You', contact:'The complexity of the model must match the complexity of the system.\nPrecision only makes sense after defining the observable and its scale.\n\nalbesa@inifta.unlp.edu.ar\nINIFTA · CONICET · UNLP', scale:'CLOSING' }];
 
 let current = 0;
 const deck = document.getElementById('deck');
@@ -1210,6 +1177,7 @@ function buildSlide(s, idx) {
       <h1>${s.title}</h1>
       <div class="title-rule"></div>
       <p class="sub">${s.subtitle}</p>
+      ${s.author ? `<p style="font-family:'DM Mono',monospace;font-size:1rem;color:var(--ink2);margin-top:1.5rem;letter-spacing:0.05em;">${s.author}</p>` : ''}
     </div></div>`;
 
   } else if (s.type === 'section') {
@@ -1239,7 +1207,7 @@ function buildSlide(s, idx) {
   } else if (s.type === 'glass') {
     const points = s.points || [];
     const ptHTML = points.map(p => `<div class="eq-point"><div class="dot"></div><p>${p}</p></div>`).join('');
-    const imgHTML = (s.image || s.svg) ? imgPlaceholder(s.image, s.svg) : '';
+    const imgHTML = s.glassImg ? `<div style="margin-top:0.75rem;"><img class="paper-img" src="${s.glassImg}" alt="Evidence" loading="lazy" style="max-height:280px;"/></div>` : (s.image || s.svg) ? imgPlaceholder(s.image, s.svg) : '';
     body = `<div class="slide-body" style="justify-content:flex-start;padding-top:1.5rem;">
       <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:${stripeColor};"></div>
       <div class="eq-wrap">
@@ -1290,10 +1258,12 @@ function buildSlide(s, idx) {
             <h3>${s.title}</h3>
             <span class="method-tag">${s.method || s.subtitle || ''}</span>
             <p class="finding">${s.finding || s.content || ''}</p>
+            ${s.findingImg ? `<img class="paper-img" src="${s.findingImg}" alt="Evidence" loading="lazy" style="max-height:200px;margin-top:0.5rem;"/>` : ''}
           </div>
           <div class="decision-card">
             <div class="dec-label">Design decision</div>
             <p class="dec-text">${s.decision}</p>
+            ${s.decisionImg ? `<img class="paper-img" src="${s.decisionImg}" alt="Evidence" loading="lazy" style="max-height:200px;margin-top:0.75rem;"/>` : ''}
           </div>
           <div style="display:flex;flex-direction:column;gap:0.75rem;">
             ${s.solutionImgs.length > 2 
