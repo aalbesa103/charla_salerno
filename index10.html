@@ -1296,7 +1296,9 @@ function buildSlide(s, idx) {
             <p class="dec-text">${s.decision}</p>
           </div>
           <div style="display:flex;flex-direction:column;gap:0.75rem;">
-            ${s.solutionImgs.map(src => `<img class="paper-img" src="${src}" alt="Evidence" loading="lazy"/>`).join('')}
+            ${s.solutionImgs.length > 2 
+              ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">${s.solutionImgs.map(src => `<img class="paper-img" src="${src}" alt="Evidence" loading="lazy" style="max-height:200px;"/>`).join('')}</div>`
+              : s.solutionImgs.map(src => `<img class="paper-img" src="${src}" alt="Evidence" loading="lazy"/>`).join('')}
           </div>
         </div>
       </div>`;
